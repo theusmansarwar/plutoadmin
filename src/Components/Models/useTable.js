@@ -17,6 +17,7 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import {
+  fetchallApplication,
   fetchallBloglist,
   fetchallcategorylist,
   fetchallCommentlist,
@@ -28,7 +29,7 @@ import { formatDate } from "../../Utils/Formatedate";
 import truncateText from "../../truncateText";
 import { useNavigate } from "react-router-dom";
 import AddCategories from "./addcategorie";
-import { deleteAllBlogs, deleteAllCategories, deleteAllComments, deleteAllLeads, deleteAllRole, deleteAllServices, deleteAllTeam, deleteAllTeamCategories, deleteAllTestimonials } from "../../DAL/delete";
+import { deleteAllApplications, deleteAllBlogs, deleteAllCategories, deleteAllComments, deleteAllLeads, deleteAllTestimonials } from "../../DAL/delete";
 import { useAlert } from "../Alert/AlertContext";
 import ApproveComment from "./approveComment";
 import DeleteModal from "./confirmDeleteModel";
@@ -43,9 +44,7 @@ export function useTable({ attributes, tableType, limitPerPage = 10 }) {
   const [totalRecords, setTotalRecords] = useState(0);
   const navigate = useNavigate();
   const [openCategoryModal, setOpenCategoryModal] = useState(false);
-  const [openTeamCategoryModal, setOpenTeamCategoryModal] = useState(false);
   const [openCommentModal, setOpenCommentModal] = useState(false);
-  const [openRoleModal, setOpenRoleModal] = useState(false);
   const [modeltype, setModeltype] = useState("Add");
   const [modelData, setModelData] = useState({});
   const [openDeleteModal,setOpenDeleteModal]=useState(false);
@@ -78,6 +77,15 @@ export function useTable({ attributes, tableType, limitPerPage = 10 }) {
       response = await fetchallCommentlist(page,rowsPerPage );
       setData(response.comments);
       setTotalRecords(response.totalComments|| 0); 
+      if(response.status == 400 ){
+        localStorage.removeItem("Token");
+        navigate("/login");
+      }
+    }
+    else if (tableType === "Applications") {
+      response = await fetchallApplication(page,rowsPerPage );
+      setData(response.applications);
+      setTotalRecords(response.totalApplication|| 0); 
       if(response.status == 400 ){
         localStorage.removeItem("Token");
         navigate("/login");
@@ -139,6 +147,9 @@ export function useTable({ attributes, tableType, limitPerPage = 10 }) {
       else if (tableType === "Lead") {
         navigate(`/view-lead/${category._id}`);
       }
+      else if (tableType === "Applications") {
+        navigate(`/view-application/${category._id}`);
+      }
       else if (tableType === "Comments") {
         setModelData(category); 
         setModeltype("Update"); 
@@ -170,6 +181,9 @@ export function useTable({ attributes, tableType, limitPerPage = 10 }) {
       }
       else if (tableType === "Testimonial") {
         response = await deleteAllTestimonials({ ids: selected });
+      }
+       else if (tableType === "Applications") {
+        response = await deleteAllApplications({ ids: selected });
       }
 
       if (response.status === 200) {
@@ -272,7 +286,9 @@ export function useTable({ attributes, tableType, limitPerPage = 10 }) {
                   <TableRow>
                     <TableCell padding="checkbox">
                       <Checkbox
-                        sx={{ color: "var(--background-color)" }}
+                        sx={{ color: "var(--background-color)","&.Mui-checked":{ color: "var(--background-color)"},'&.MuiCheckbox-indeterminate': {
+      color: "var(--background-color)",
+    }, }}
                         indeterminate={
                           selected.length > 0 && selected.length < data.length
                         }
@@ -302,7 +318,7 @@ export function useTable({ attributes, tableType, limitPerPage = 10 }) {
                         <TableRow key={row._id} selected={isItemSelected}>
                           <TableCell padding="checkbox">
                             <Checkbox
-                              sx={{ color: "var(--background-color)" }}
+                             sx={{ color: "var(--background-color)","&.Mui-checked":{ color: "var(--background-color)"} }}
                               checked={isItemSelected}
                               onChange={() => {
                                 setSelected((prev) =>

@@ -98,18 +98,7 @@ export const fetchallTestimonialslist = async (page, rowsPerPages) => {
   };
   return invokeApi(reqObj);
 };
-export const fetchServiceList = async () => {
-  const reqObj = {
-    path: `/service/live`,
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("Token")}`,
-    },
 
-    body: {},
-  };
-  return invokeApi(reqObj);
-};
 export const fetchTestimonialbyid = async (id) => {
   const reqObj = {
     path: `/testimonial/view/${id}`,
@@ -158,9 +147,9 @@ export const fetchallTeamCategories = async (id) => {
   };
   return invokeApi(reqObj);
 };
-export const fetchTeamCategoryList = async (id) => {
+export const fetchallApplication = async ( page, rowsPerPages) => {
   const reqObj = {
-    path: `/teamcategory/live`,
+    path: `/applications/ApplicationList?limit=${rowsPerPages}&page=${page}`,
     method: "GET",
     headers: {
       Authorization: `Bearer ${localStorage.getItem("Token")}`,
@@ -170,71 +159,9 @@ export const fetchTeamCategoryList = async (id) => {
   };
   return invokeApi(reqObj);
 };
-
-export const fetchRoleList = async (id) => {
+export const fetchSingleApplication = async (id) => {
   const reqObj = {
-    path: `/role/live`,
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("Token")}`,
-    },
-
-    body: {},
-  };
-  return invokeApi(reqObj);
-};
-
-export const fetchallRoles = async (page, rowsPerPages) => {
-  const reqObj = {
-    path: `/role/view?limit=${rowsPerPages}&page=${page}`,
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("Token")}`,
-    },
-
-    body: {},
-  };
-  return invokeApi(reqObj);
-};
-export const fetchTeamMemberById = async (id) => {
-  const reqObj = {
-    path: `/team/view/${id}`,
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("Token")}`,
-    },
-
-    body: {},
-  };
-  return invokeApi(reqObj);
-};
-export const fetchTeamMember = async (page, rowsPerPages) => {
-  const reqObj = {
-    path: `/team/view?limit=${rowsPerPages}&page=${page}`,
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("Token")}`,
-    },
-
-    body: {},
-  };
-  return invokeApi(reqObj);
-};
-export const fetchServices = async (page, rowsPerPages) => {
-  const reqObj = {
-    path: `/service/view?limit=${rowsPerPages}&page=${page}`,
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("Token")}`,
-    },
-
-    body: {},
-  };
-  return invokeApi(reqObj);
-};
-export const fetchServicesbyid = async (id) => {
-  const reqObj = {
-    path: `/service/view/${id}`,
+    path: `/applications/Application/${id}`,
     method: "GET",
     headers: {
       Authorization: `Bearer ${localStorage.getItem("Token")}`,

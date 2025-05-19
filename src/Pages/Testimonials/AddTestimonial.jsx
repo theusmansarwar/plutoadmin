@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAlert } from "../../Components/Alert/AlertContext";
-import { fetchServiceList, fetchTestimonialbyid } from "../../DAL/fetch";
+import {  fetchTestimonialbyid } from "../../DAL/fetch";
 import "./AddTestimonial.css";
 import { updateTestimonial } from "../../DAL/edit";
 import { createTestimonial } from "../../DAL/create";
@@ -22,20 +22,7 @@ const AddTestimonial = () => {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
-  // Fetch Services List for Dropdown
-  useEffect(() => {
-    const fetchServices = async () => {
-      try {
-        const response = await fetchServiceList();
-        if (response && response.services) {
-          setServices(response.services);
-        }
-      } catch (error) {
-        console.error("Error fetching services:", error);
-      }
-    };
-    fetchServices();
-  }, []);
+
   useEffect(() => {
     const fetchTestimonial = async () => {
       try {
