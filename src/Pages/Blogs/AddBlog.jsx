@@ -215,7 +215,7 @@ const AddBlog = () => {
             />
             <input
               type="file"
-              accept="image/png, image/jpeg image/webp"
+              accept="image/png, image/jpeg, image/webp"
               style={{ display: "none" }}
               ref={fileInputRef}
               onChange={handleFileChange}
