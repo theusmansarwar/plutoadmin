@@ -3,7 +3,6 @@ import "./AddBlog.css";
 import { IoMdCloseCircle } from "react-icons/io";
 import JoditEditor from "jodit-react";
 import dummyimg from "../../Assets/upload-background.PNG";
-
 import { useNavigate, useParams } from "react-router-dom";
 import { useAlert } from "../../Components/Alert/AlertContext";
 import { fetchBlogById, fetchcategorylist } from "../../DAL/fetch";
@@ -15,7 +14,10 @@ const AddBlog = () => {
   const { id } = useParams();
   const { showAlert } = useAlert();
   const navigate = useNavigate();
+
   const [selectedDateTime, setSelectedDateTime] = useState("");
+  const [faqSchema, setFaqSchema] = useState({});
+  const [faqSchemaText, setFaqSchemaText] = useState("{}");
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -29,9 +31,11 @@ const AddBlog = () => {
   const [categoryId, setCategoryId] = useState("");
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
+
   const fileInputRef = useRef(null);
   const editor = useRef(null);
-  const [errors, setErrors] = useState({});
+
   const config = useMemo(
     () => ({
       readonly: false,
@@ -57,12 +61,14 @@ const AddBlog = () => {
             setMetaDescription(blog.metaDescription || "");
             setSlug(blog.slug || "");
             setCategoryId(blog.category?._id || "");
-            setImage(baseUrl + blog.thumbnail || dummyimg);
+            setImage(blog.thumbnail ? baseUrl + blog.thumbnail : dummyimg);
+            const schema = blog.faqSchema ? JSON.parse(blog.faqSchema) : {};
+            setFaqSchema(schema);
+            setFaqSchemaText(JSON.stringify(schema, null, 2));
             setIsVisible(blog?.published);
             if (blog?.publishedDate) {
               const dateObj = new Date(blog.publishedDate);
-              const formattedDateTime = dateObj.toISOString().slice(0, 16); // Extracts YYYY-MM-DDTHH:mm
-              setSelectedDateTime(formattedDateTime);
+              setSelectedDateTime(dateObj.toISOString().slice(0, 16));
             }
           }
         } catch (error) {
@@ -73,7 +79,6 @@ const AddBlog = () => {
     }
   }, [id]);
 
-  // 🔹 Fetch Categories
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -88,7 +93,6 @@ const AddBlog = () => {
     fetchCategories();
   }, []);
 
-  // 🔹 Handle File Upload
   const handleFileChange = (event) => {
     if (event.target.files?.[0]) {
       const file = event.target.files[0];
@@ -96,26 +100,26 @@ const AddBlog = () => {
     }
   };
 
-  // 🔹 Handle Submit (Create or Update)
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const errorObj = {};
-    if (!categoryId) {
-      errorObj.category = "Category is required.";
-    }
 
-    // Validate Date Selection
-    if (!selectedDateTime) {
-      errorObj.date = "Published Date is required.";
+    const errorObj = {};
+    if (!categoryId) errorObj.category = "Category is required.";
+    if (!selectedDateTime) errorObj.date = "Published Date is required.";
+
+    try {
+      JSON.parse(faqSchemaText);
+    } catch {
+      errorObj.faqSchema = "Schema JSON is invalid.";
     }
 
     if (Object.keys(errorObj).length > 0) {
       setErrors(errorObj);
-      setLoading(false);
       return;
     }
+
     setLoading(true);
-    const formattedDateTime = new Date(selectedDateTime).toISOString();
+
     const formData = new FormData();
     formData.append("title", title);
     formData.append("description", description);
@@ -126,38 +130,30 @@ const AddBlog = () => {
     formData.append("slug", slug);
     formData.append("category", categoryId);
     formData.append("published", isVisible);
-    formData.append("publishedDate", formattedDateTime);
+    formData.append("publishedDate", new Date(selectedDateTime).toISOString());
+    formData.append("faqSchema", faqSchemaText);
 
     if (fileInputRef.current?.files[0]) {
       formData.append("thumbnail", fileInputRef.current.files[0]);
     }
 
     try {
-      let response;
-      if (id) {
-        response = await updateBlog(id, formData); // Update if ID exists
-      } else {
-        response = await createBlog(formData); // Create if no ID
-      }
+      const response = id
+        ? await updateBlog(id, formData)
+        : await createBlog(formData);
 
-      if (response.status == 201) {
+      if (response.status === 200 || response.status === 201) {
         showAlert("success", response.message);
-        setLoading(false);
         navigate("/blogs");
-      } else if (response.status == 200) {
-        showAlert("success", response.message);
-        setLoading(false);
-        navigate("/blogs");
-      } else if (response.status == 400) {
+      } else if (response.status === 400) {
         localStorage.removeItem("Token");
         navigate("");
       } else if (response.missingFields) {
-        const errorObj = {};
+        const newErrors = {};
         response.missingFields.forEach((field) => {
-          errorObj[field.name] = field.message;
+          newErrors[field.name] = field.message;
         });
-        setErrors(errorObj);
-        setLoading(false);
+        setErrors(newErrors);
       }
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -173,33 +169,48 @@ const AddBlog = () => {
         <h3>{id ? "Edit Blog" : "Add Blog"}</h3>
         <div className="upper-section">
           <div className="left">
-            {errors.title && <p className="error">{errors.title}</p>}
             <input
               type="text"
-              name="title"
               placeholder="Title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
-            {errors.description && (
-              <p className="error">{errors.description}</p>
-            )}
+            {errors.title && <p className="error">{errors.title}</p>}
+
             <textarea
-              name="description"
               placeholder="Description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
-            {errors.metaDescription && (
-              <p className="error">{errors.metaDescription}</p>
-            )}
+            {errors.description && <p className="error">{errors.description}</p>}
+
             <textarea
-              name="metaDescription"
               placeholder="Meta Description"
               value={metaDescription}
               onChange={(e) => setMetaDescription(e.target.value)}
             />
+            {errors.metaDescription && <p className="error">{errors.metaDescription}</p>}
+
+            <textarea
+              placeholder="Schema (JSON)"
+              value={faqSchemaText}
+              onChange={(e) => {
+                setFaqSchemaText(e.target.value);
+                try {
+                  const parsed = JSON.parse(e.target.value);
+                  setFaqSchema(parsed);
+                  setErrors((prev) => ({ ...prev, faqSchema: null }));
+                } catch {
+                  setErrors((prev) => ({
+                    ...prev,
+                    faqSchema: "Invalid JSON format",
+                  }));
+                }
+              }}
+            />
+            {errors.faqSchema && <p className="error">{errors.faqSchema}</p>}
           </div>
+
           <div
             className="image-container"
             style={{ border: errors.thumbnail ? "2px solid red" : "" }}
@@ -211,7 +222,10 @@ const AddBlog = () => {
             />
             <IoMdCloseCircle
               className="remove-icon"
-              onClick={() => setImage(dummyimg)}
+              onClick={() => {
+                setImage(dummyimg);
+                fileInputRef.current.value = null;
+              }}
             />
             <input
               type="file"
@@ -222,20 +236,16 @@ const AddBlog = () => {
             />
           </div>
         </div>
-        {errors.slug && <p className="error">{errors.slug}</p>}
+
         <input
           type="text"
-          name="slug"
           placeholder="Slug"
           value={slug}
           onChange={(e) => setSlug(e.target.value)}
         />
+        {errors.slug && <p className="error">{errors.slug}</p>}
 
-        {errors.category && <p className="error">{errors.category}</p>}
-        <select
-          value={categoryId}
-          onChange={(e) => setCategoryId(e.target.value)}
-        >
+        <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)}>
           <option value="">Select a category</option>
           {categories.map((category) => (
             <option key={category._id} value={category._id}>
@@ -243,32 +253,31 @@ const AddBlog = () => {
             </option>
           ))}
         </select>
-        {errors.author && <p className="error">{errors.author}</p>}
+        {errors.category && <p className="error">{errors.category}</p>}
+
         <input
           type="text"
-          name="author"
           placeholder="Author"
           value={author}
           onChange={(e) => setAuthor(e.target.value)}
         />
+        {errors.author && <p className="error">{errors.author}</p>}
 
-        {errors.tags && <p className="error">{errors.tags}</p>}
         <input
           type="text"
-          name="tags"
           placeholder="Tags (comma-separated)"
           value={tags}
           onChange={(e) => setTags(e.target.value)}
         />
+        {errors.tags && <p className="error">{errors.tags}</p>}
 
-        {errors.date && <p className="error">{errors.date}</p>}
         <input
           type="datetime-local"
           value={selectedDateTime}
-          onChange={(e) => setSelectedDateTime(e.target.value)} // Stores `YYYY-MM-DDTHH:mm`
+          onChange={(e) => setSelectedDateTime(e.target.value)}
         />
+        {errors.date && <p className="error">{errors.date}</p>}
 
-        {errors.detail && <p className="error">{errors.detail}</p>}
         <JoditEditor
           ref={editor}
           value={detail}
@@ -276,6 +285,7 @@ const AddBlog = () => {
           tabIndex={1}
           onChange={(newContent) => setDetail(newContent)}
         />
+        {errors.detail && <p className="error">{errors.detail}</p>}
 
         <div className="toggle-container">
           <span className="toggle-label">
@@ -295,11 +305,7 @@ const AddBlog = () => {
         </div>
 
         <div className="button-sections">
-          <button
-            type="button"
-            className="cancelbtn"
-            onClick={() => navigate("/blogs")}
-          >
+          <button type="button" className="cancelbtn" onClick={() => navigate("/blogs")}>
             Cancel
           </button>
           <button className="published" type="submit" disabled={loading}>
