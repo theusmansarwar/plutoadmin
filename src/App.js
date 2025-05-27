@@ -45,7 +45,7 @@ const App = ({ onLogout, message, userType }) => {
   };
 
   const filteredItems =
-    userType === "Writter"
+    userType === "Writer"
       ? allItems.filter((item) =>
           allowedRoutesForWriter.includes(item.route)
         )
