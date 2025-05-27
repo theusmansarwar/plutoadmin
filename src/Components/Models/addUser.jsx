@@ -8,8 +8,9 @@ import {
   Switch,
   FormControlLabel,
 } from "@mui/material";
-import { createnewRole } from "../../DAL/create";
-import { updateRole } from "../../DAL/edit";
+import { createnewusertype, createTeamMember } from "../../DAL/create";
+import { updateuser, updateusertype } from "../../DAL/edit";
+import { fetchallUsertypeslist } from "../../DAL/fetch"; // Make sure this function exists
 
 const style = {
   position: "absolute",
@@ -23,15 +24,31 @@ const style = {
   borderRadius: "12px",
 };
 
-export default function Roles({ open, setOpen, Modeltype, Modeldata, onResponse }) {
+export default function AddUser({ open, setOpen, Modeltype, Modeldata, onResponse }) {
   const [name, setName] = React.useState(Modeldata?.name || "");
+  const [email, setEmail] = React.useState(Modeldata?.email || "");
+  const [password, setPassword] = React.useState("");
   const [published, setPublished] = React.useState(Modeldata?.published || false);
   const [id, setId] = React.useState(Modeldata?._id || "");
 
+  const [userTypes, setUserTypes] = React.useState([]);
+  const [selectedTypeId, setSelectedTypeId] = React.useState("");
+
   React.useEffect(() => {
     setName(Modeldata?.name || "");
+    setEmail(Modeldata?.email || "");
     setPublished(Modeldata?.published || false);
     setId(Modeldata?._id || "");
+    setSelectedTypeId(Modeldata?.typeId || "");
+
+    const fetchTypes = async () => {
+      const res = await fetchallUsertypeslist();
+   
+        setUserTypes(res.userType);
+     
+    };
+
+    fetchTypes();
   }, [Modeldata]);
 
   const handleClose = () => setOpen(false);
@@ -39,48 +56,88 @@ export default function Roles({ open, setOpen, Modeltype, Modeldata, onResponse 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const roleData = {
-      name: name,
-      published: published,
+    const usertypeData = {
+      name,
+      email,
+      password,
+      published,
+      typeId: selectedTypeId,
     };
 
     let response;
     if (Modeltype === "Add") {
-      response = await createnewRole(roleData);
+      response = await createTeamMember(usertypeData);
     } else {
-      response = await updateRole(id, roleData);
+      response = await updateuser(id, usertypeData);
     }
 
-    if (response.status == 201 || response.status == 200) {
+    if (response.status === 201 || response.status === 200) {
       onResponse({ messageType: "success", message: response.message });
     } else {
       onResponse({ messageType: "error", message: response.message });
     }
-
     setOpen(false);
   };
 
   return (
-    <Modal
-      open={open}
-      onClose={handleClose}
-      aria-labelledby="modal-title"
-      aria-describedby="modal-description"
-    >
+    <Modal open={open} onClose={handleClose} aria-labelledby="modal-title">
       <Box sx={style}>
         <Typography id="modal-title" variant="h6" component="h2">
-          {Modeltype} Role
+          {Modeltype} User
         </Typography>
+
         <TextField
           sx={{ marginTop: "10px", borderRadius: "6px" }}
           fullWidth
           required
-          label="Role Name"
+          label="Name"
           variant="outlined"
-          name="name"
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
+
+        <TextField
+          sx={{ marginTop: "10px", borderRadius: "6px" }}
+          fullWidth
+          required
+          label="Email"
+          variant="outlined"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+
+        <TextField
+          sx={{ marginTop: "10px", borderRadius: "6px" }}
+          fullWidth
+          required
+          type="password"
+          label="Password"
+          variant="outlined"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+
+        <select
+          style={{
+            marginTop: "10px",
+            borderRadius: "6px",
+            width: "100%",
+            padding: "15px",
+            borderColor: "#ccc",
+          }}
+          value={selectedTypeId}
+          onChange={(e) => setSelectedTypeId(e.target.value)}
+        >
+          <option value="" disabled>
+            Select User Type
+          </option>
+          {userTypes.map((type) => (
+            <option key={type._id} value={type._id}>
+              {type.name}
+            </option>
+          ))}
+        </select>
+
         <FormControlLabel
           control={
             <Switch
@@ -92,6 +149,7 @@ export default function Roles({ open, setOpen, Modeltype, Modeldata, onResponse 
           label="Published"
           sx={{ marginTop: "10px" }}
         />
+
         <Box
           sx={{
             display: "flex",

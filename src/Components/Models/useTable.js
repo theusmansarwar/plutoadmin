@@ -23,16 +23,22 @@ import {
   fetchallCommentlist,
   fetchallLeads,
   fetchallTestimonialslist,
+  fetchallUserlist,
+  fetchallUserTypelist,
+  fetchBloglistofwritter,
  
 } from "../../DAL/fetch";
 import { formatDate } from "../../Utils/Formatedate";
 import truncateText from "../../truncateText";
 import { useNavigate } from "react-router-dom";
 import AddCategories from "./addcategorie";
-import { deleteAllApplications, deleteAllBlogs, deleteAllCategories, deleteAllComments, deleteAllLeads, deleteAllTestimonials } from "../../DAL/delete";
+import { deleteAllApplications, deleteAllBlogs, deleteAllCategories, deleteAllComments, deleteAllLeads, deleteAllTestimonials, deleteAllUsers, deleteAllUsersType } from "../../DAL/delete";
 import { useAlert } from "../Alert/AlertContext";
 import ApproveComment from "./approveComment";
 import DeleteModal from "./confirmDeleteModel";
+import UserType from "../../Pages/Users/UserType";
+import AddUsertype from "./addUsertype";
+import AddUser from "./addUser";
 
 export function useTable({ attributes, tableType, limitPerPage = 10 }) {
     const { showAlert } = useAlert(); // Since you created a custom hook
@@ -44,6 +50,8 @@ export function useTable({ attributes, tableType, limitPerPage = 10 }) {
   const [totalRecords, setTotalRecords] = useState(0);
   const navigate = useNavigate();
   const [openCategoryModal, setOpenCategoryModal] = useState(false);
+   const [openUserTypeModal, setOpenUserTypeModal] = useState(false);
+   const [openUserModal, setOpenUserModal] = useState(false);
   const [openCommentModal, setOpenCommentModal] = useState(false);
   const [modeltype, setModeltype] = useState("Add");
   const [modelData, setModelData] = useState({});
@@ -53,6 +61,9 @@ export function useTable({ attributes, tableType, limitPerPage = 10 }) {
   }, [page, rowsPerPage]);
 
   const fetchData = async () => {
+     const user = JSON.parse(localStorage.getItem("user"));
+  const userType = user?.type?.name || "";
+   const userName = user?.name || "";
     let response;
     if (tableType === "Categories") {
       response = await fetchallcategorylist(page,rowsPerPage);
@@ -63,7 +74,8 @@ export function useTable({ attributes, tableType, limitPerPage = 10 }) {
         navigate("/login");
       }
     } else if (tableType === "Blogs") {
-      response = await fetchallBloglist(page,rowsPerPage ); 
+      if(userType==="Writter"){
+ response = await fetchBloglistofwritter(page,rowsPerPage,userName ); 
       console.log("Response:", response);
       
       setData(response.blogs);
@@ -73,7 +85,46 @@ export function useTable({ attributes, tableType, limitPerPage = 10 }) {
         localStorage.removeItem("Token");
         navigate("/login");
       } 
-    } else if (tableType === "Comments") {
+      }
+      else{
+        response = await fetchallBloglist(page,rowsPerPage ); 
+      console.log("Response:", response);
+      
+      setData(response.blogs);
+      setPage(response.currentPage); 
+      setTotalRecords(response.totalBlogs); 
+      if(response.status == 400 ){
+        localStorage.removeItem("Token");
+        navigate("/login");
+      } 
+      }
+     
+    }
+     else if (tableType === "UserType") {
+      response = await fetchallUserTypelist(page,rowsPerPage ); 
+      console.log("Response:", response);
+      
+      setData(response.userType);
+      setPage(response.currentPage); 
+      setTotalRecords(response.totalUserType); 
+      if(response.status == 400 ){
+        localStorage.removeItem("Token");
+        navigate("/login");
+      } 
+    }
+     else if (tableType === "Users") {
+      response = await fetchallUserlist(page,rowsPerPage ); 
+      console.log("Response:", response);
+      
+      setData(response.data);
+      setPage(response.currentPage); 
+      setTotalRecords(response.totalUsers); 
+      if(response.status == 400 ){
+        localStorage.removeItem("Token");
+        navigate("/login");
+      } 
+    }
+     else if (tableType === "Comments") {
       response = await fetchallCommentlist(page,rowsPerPage );
       setData(response.comments);
       setTotalRecords(response.totalComments|| 0); 
@@ -137,6 +188,16 @@ export function useTable({ attributes, tableType, limitPerPage = 10 }) {
         setModeltype("Update"); 
         setOpenCategoryModal(true);
       }
+       else if (tableType === "UserType") {
+        setModelData(category); 
+        setModeltype("Update"); 
+        setOpenUserTypeModal(true);
+      }
+        else if (tableType === "Users") {
+        setModelData(category); 
+        setModeltype("Update"); 
+        setOpenUserModal(true);
+      }
       else if (tableType === "Blogs") {
         navigate(`/edit-blog/${category._id}`);
       }
@@ -185,6 +246,12 @@ export function useTable({ attributes, tableType, limitPerPage = 10 }) {
        else if (tableType === "Applications") {
         response = await deleteAllApplications({ ids: selected });
       }
+      else if (tableType === "UserType") {
+        response = await deleteAllUsersType({ ids: selected });
+      }
+         else if (tableType === "Users") {
+        response = await deleteAllUsers({ ids: selected });
+      }
 
       if (response.status === 200) {
         showAlert("success", response.message || "Deleted successfully");
@@ -202,6 +269,16 @@ export function useTable({ attributes, tableType, limitPerPage = 10 }) {
   const handleAddButton = () => {
     if (tableType === "Categories") {
       setOpenCategoryModal(true);
+      setModeltype("Add");
+      setModelData();
+    }
+    else if (tableType === "UserType") {
+      setOpenUserTypeModal(true);
+      setModeltype("Add");
+      setModelData();
+    }
+     else if (tableType === "Users") {
+      setOpenUserModal(true);
       setModeltype("Add");
       setModelData();
     } else if (tableType === "Blogs") {
@@ -240,7 +317,20 @@ export function useTable({ attributes, tableType, limitPerPage = 10 }) {
           Modeldata={modelData}
           onResponse={handleResponse}
         />
-        
+         <AddUsertype
+          open={openUserTypeModal}
+          setOpen={setOpenUserTypeModal}
+          Modeltype={modeltype}
+          Modeldata={modelData}
+          onResponse={handleResponse}
+        />
+           <AddUser
+          open={openUserModal}
+          setOpen={setOpenUserModal}
+          Modeltype={modeltype}
+          Modeldata={modelData}
+          onResponse={handleResponse}
+        />
           <ApproveComment
           open={openCommentModal}
           setOpen={setOpenCommentModal}

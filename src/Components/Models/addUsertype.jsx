@@ -8,8 +8,8 @@ import {
   Switch,
   FormControlLabel,
 } from "@mui/material";
-import {createnewTeamCategory } from "../../DAL/create";
-import { updateCategory, updateTeamCategory } from "../../DAL/edit";
+import { createnewusertype } from "../../DAL/create";
+import { updateusertype } from "../../DAL/edit";
 
 
 const style = {
@@ -24,7 +24,7 @@ const style = {
   borderRadius: "12px",
 };
 
-export default function AddTeamCategories({ open, setOpen, Modeltype, Modeldata,onResponse  }) {
+export default function AddUsertype({ open, setOpen, Modeltype, Modeldata,onResponse  }) {
   const [name, setName] = React.useState(Modeldata?.name || "");
   const [published, setPublished] = React.useState(Modeldata?.published || false);
   const [id, setId] = React.useState(Modeldata?._id || "");
@@ -40,16 +40,15 @@ export default function AddTeamCategories({ open, setOpen, Modeltype, Modeldata,
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    const categoryData = {
+    const usertypeData = {
         name: name,
         published: published,
       };
   let response;
     if (Modeltype === "Add") {
-      response =await createnewTeamCategory(categoryData); 
-      
+      response =await createnewusertype(usertypeData); // Send FormData
     }else{
-        response =await updateTeamCategory(id,categoryData); 
+        response =await updateusertype(id,usertypeData); 
     }
     if(response.status==201){
         onResponse({ messageType: "success", message: response.message });
@@ -73,13 +72,13 @@ export default function AddTeamCategories({ open, setOpen, Modeltype, Modeldata,
     >
       <Box sx={style}>
         <Typography id="modal-title" variant="h6" component="h2">
-          {Modeltype} Category
+          {Modeltype} usertype
         </Typography>
         <TextField
           sx={{ marginTop: "10px", borderRadius: "6px" }}
           fullWidth
           required
-          label="Category Name"
+          label="usertype Name"
           variant="outlined"
           name="name"
           value={name}

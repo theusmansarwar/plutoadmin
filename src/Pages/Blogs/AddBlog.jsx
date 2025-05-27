@@ -23,6 +23,7 @@ const AddBlog = () => {
   const [description, setDescription] = useState("");
   const [detail, setDetail] = useState("");
   const [author, setAuthor] = useState("");
+  const [newauthor, setNewAuthor] = useState("");
   const [tags, setTags] = useState("");
   const [metaDescription, setMetaDescription] = useState("");
   const [slug, setSlug] = useState("");
@@ -41,12 +42,15 @@ const AddBlog = () => {
       readonly: false,
       uploader: { insertImageAsBase64URI: true },
       placeholder: "Start typing...",
-      imageExtensions: ["jpg", "jpeg", "png", "gif", "bmp", "webp", "svg"],
+      imageExtensions: ["jpg", "jpeg", "png", "gif", "bmp", "svg"],
     }),
     []
   );
 
   useEffect(() => {
+     const user = JSON.parse(localStorage.getItem("user"));
+   const userName = user?.name || "";
+   setNewAuthor(userName);
     if (id) {
       const fetchBlog = async () => {
         try {
@@ -124,7 +128,7 @@ const AddBlog = () => {
     formData.append("title", title);
     formData.append("description", description);
     formData.append("detail", detail);
-    formData.append("author", author);
+    formData.append("author", author || newauthor );
     formData.append("tags", tags);
     formData.append("metaDescription", metaDescription);
     formData.append("slug", slug);
@@ -255,14 +259,7 @@ const AddBlog = () => {
         </select>
         {errors.category && <p className="error">{errors.category}</p>}
 
-        <input
-          type="text"
-          placeholder="Author"
-          value={author}
-          onChange={(e) => setAuthor(e.target.value)}
-        />
-        {errors.author && <p className="error">{errors.author}</p>}
-
+       
         <input
           type="text"
           placeholder="Tags (comma-separated)"

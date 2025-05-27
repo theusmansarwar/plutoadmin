@@ -30,6 +30,7 @@ const Login = ({ onLoginSuccess }) => {
       if (result.status == 200) {
         alert("Login Successful: " + result?.message);
         localStorage.setItem("Token", result?.token);
+        localStorage.setItem("user", JSON.stringify(result?.data));
         onLoginSuccess();
       } else {
         // Login failed, show the error message from the server

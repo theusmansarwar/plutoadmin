@@ -23,20 +23,20 @@ export const updateCategory = async (id,data) => {
   };
   return invokeApi(reqObj);
 };
-export const updateTeamCategory = async (id,data) => {
+export const updateusertype = async (id,data) => {
  
   const reqObj = {
-    path: `/teamcategory/update/${id}`,
+    path: `/usertype/update/${id}`,
     method: "PUT",
     headers: {      Authorization: `Bearer ${localStorage.getItem("Token")}`,},
     postData: data,
   };
   return invokeApi(reqObj);
 };
-export const updateTeamMember = async (id,data) => {
+export const updateuser = async (id,data) => {
  
   const reqObj = {
-    path: `/team/update/${id}`,
+    path: `/admin/users/${id}`,
     method: "PUT",
     headers: {      Authorization: `Bearer ${localStorage.getItem("Token")}`,},
     postData: data,
