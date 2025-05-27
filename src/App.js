@@ -59,7 +59,7 @@ const App = ({ onLogout, message, userType }) => {
   }, [location.pathname, filteredItems]);
 
   useEffect(() => {
-    if (userType === "Writter" && !isWriterRouteAllowed()) {
+    if (userType === "Writer" && !isWriterRouteAllowed()) {
       navigate("/blogs");
     }
   }, [location.pathname, userType, navigate]);
@@ -104,7 +104,7 @@ const App = ({ onLogout, message, userType }) => {
           <Route path="/edit-blog/:id" element={<AddBlog />} />
 
           {/* Admin-only routes */}
-          {userType !== "Writter" && (
+          {userType !== "Writer" && (
             <>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/comments" element={<Comments />} />
