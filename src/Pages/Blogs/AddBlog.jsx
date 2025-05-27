@@ -149,9 +149,6 @@ const AddBlog = () => {
       if (response.status === 200 || response.status === 201) {
         showAlert("success", response.message);
         navigate("/blogs");
-      } else if (response.status === 400) {
-        localStorage.removeItem("Token");
-        navigate("");
       } else if (response.missingFields) {
         const newErrors = {};
         response.missingFields.forEach((field) => {
