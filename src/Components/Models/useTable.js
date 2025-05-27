@@ -74,7 +74,7 @@ export function useTable({ attributes, tableType, limitPerPage = 10 }) {
         navigate("/login");
       }
     } else if (tableType === "Blogs") {
-      if(userType==="Writter"){
+      if(userType==="Writer"){
  response = await fetchBloglistofwritter(page,rowsPerPage,userName ); 
       console.log("Response:", response);
       
