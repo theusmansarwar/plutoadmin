@@ -17,7 +17,8 @@ import Applications from "./Pages/Applications/Applications";
 import ViewApplication from "./Pages/Applications/ViewApplication";
 import UserType from "./Pages/Users/UserType";
 import Users from "./Pages/Users/Users";
-
+import Tickets from "./Pages/Tickets/Tickets";
+import Chat from "./Pages/Tickets/Chat";
 const App = ({ onLogout, message, userType }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -33,6 +34,7 @@ const App = ({ onLogout, message, userType }) => {
     { id: 7, name: "Testimonials", route: "/testimonials" },
     { id: 8, name: "Users", route: "/users" },
     { id: 9, name: "UsersType", route: "/usertype" },
+     { id: 10, name: "Tickets", route: "/tickets" },
   ];
 
   const allowedRoutesForWriter = ["/blogs", "/categories", "/add-blog"];
@@ -117,6 +119,8 @@ const App = ({ onLogout, message, userType }) => {
               <Route path="/edit-testimonial/:id" element={<AddTestimonial />} />
               <Route path="/usertype" element={<UserType />} />
               <Route path="/users" element={<Users />} />
+               <Route path="/tickets" element={<Tickets />} />
+                 <Route path="/chats/:ticket_id" element={<Chat />} />
             </>
           )}
 

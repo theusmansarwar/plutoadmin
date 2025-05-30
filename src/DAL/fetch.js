@@ -62,6 +62,30 @@ export const fetchallBloglist = async ( page, rowsPerPages) => {
   };
   return invokeApi(reqObj);
 };
+export const fetchallTickets = async ( page, rowsPerPages) => {
+  const reqObj = {
+    path: `/ticket/list?limit=${rowsPerPages}&page=${page}`,
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("Token")}`,
+    },
+
+    body: {},
+  };
+  return invokeApi(reqObj);
+};
+export const fetchTicket = async ( id) => {
+  const reqObj = {
+    path: `/ticket/view/${id}`,
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("Token")}`,
+    },
+
+    body: {},
+  };
+  return invokeApi(reqObj);
+};
 export const fetchBloglistofwritter = async ( page, rowsPerPages,name) => {
   const reqObj = {
     path: `/blog/writerlist?limit=${rowsPerPages}&page=${page}&search=${name}`,

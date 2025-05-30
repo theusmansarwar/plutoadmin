@@ -23,6 +23,7 @@ import {
   fetchallCommentlist,
   fetchallLeads,
   fetchallTestimonialslist,
+  fetchallTickets,
   fetchallUserlist,
   fetchallUserTypelist,
   fetchBloglistofwritter,
@@ -107,6 +108,17 @@ export function useTable({ attributes, tableType, limitPerPage = 10 }) {
       setData(response.userType);
       setPage(response.currentPage); 
       setTotalRecords(response.totalUserType); 
+      if(response.status == 400 ){
+        localStorage.removeItem("Token");
+        navigate("/login");
+      } 
+    }
+     else if (tableType === "Tickets") {
+      response = await fetchallTickets(page,rowsPerPage ); 
+      console.log("Response:", response);
+      
+      setData(response.ticketslist);
+      setPage(response.currentPage);  
       if(response.status == 400 ){
         localStorage.removeItem("Token");
         navigate("/login");
@@ -202,6 +214,9 @@ export function useTable({ attributes, tableType, limitPerPage = 10 }) {
         navigate(`/edit-blog/${category._id}`);
       }
      
+       else if (tableType === "Tickets") {
+        navigate(`/chats/${category._id}`);
+      }
       else if (tableType === "Testimonial") {
         navigate(`/edit-testimonial/${category._id}`);
       }

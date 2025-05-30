@@ -39,7 +39,7 @@
     height: 60px; /* Adjust as needed */
     resize: none; /* Prevent resizing */
     line-height: 1.2; /* Adjust line height for better spacing */
-    overflow: hidden; /* Hide scrollbars */
+    overflow-y: scroll; /* Hide scrollbars */
 }
 
 .AddPost h3 {

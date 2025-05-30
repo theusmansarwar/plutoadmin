@@ -60,4 +60,27 @@ export const createTeamMember = async (data) => {
   };
   return invokeApi(reqObj);
 };
+export const createnewticket = async (id) => {
 
+  const reqObj = {
+    path: "/ticket/add",
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("Token")}`,
+    },
+    postData: id,
+  };
+  return invokeApi(reqObj);
+};
+export const createMessage = async (data) => {
+
+  const reqObj = {
+    path: "/chat/add",
+    method: "POST",
+    headers: {
+      "Content-Type": "multipart/form-data"
+    },
+    postData: data,
+  };
+  return invokeApi(reqObj);
+};

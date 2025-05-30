@@ -1,0 +1,29 @@
+.text-message {
+  max-width: 300px;
+  width: fit-content;
+  background-color: var(--background-color2);
+  color: var(--text-color);
+  border-radius: var(--default-border-radius);
+  padding: 10px;
+  font-size: var(--default-p-size);
+}
+.text-message .time {
+  display: flex;
+  justify-self: flex-end;
+  margin-top: 5px;
+  color: var(--background-color);
+     font-size: 10px;
+}
+/* ///////// Sender styling ////////// */
+.text-message.sender {
+  background-color: var(--background-color);
+  color: rgb(255, 255, 255);
+}
+.text-message.receiver {
+  background-color: grey;
+  color: rgb(255, 255, 255);
+}
+.text-message.sender .time {
+  color: black;
+    font-size: 10px;
+}
