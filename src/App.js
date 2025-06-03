@@ -18,7 +18,6 @@ import ViewApplication from "./Pages/Applications/ViewApplication";
 import UserType from "./Pages/Users/UserType";
 import Users from "./Pages/Users/Users";
 import Tickets from "./Pages/Tickets/Tickets";
-import Chat from "./Pages/Tickets/Chat";
 const App = ({ onLogout, message, userType }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -120,7 +119,6 @@ const App = ({ onLogout, message, userType }) => {
               <Route path="/usertype" element={<UserType />} />
               <Route path="/users" element={<Users />} />
                <Route path="/tickets" element={<Tickets />} />
-                 <Route path="/chats/:ticket_id" element={<Chat />} />
             </>
           )}
 

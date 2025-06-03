@@ -7,6 +7,7 @@ const Tickets = () => {
     { id: "ticketNO", label: "Ticket NO" },
     { id: "clientname", label: "Client Name" },
     { id: "subject", label: "Subject" },
+    { id: "status", label: "Status" },
     { id: "createdAt", label: "Created At" },
   ];
 

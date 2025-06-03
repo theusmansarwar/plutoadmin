@@ -70,10 +70,7 @@ export function useTable({ attributes, tableType, limitPerPage = 10 }) {
       response = await fetchallcategorylist(page,rowsPerPage);
       setData(response.categories);
       setTotalRecords(response.categories.length);
-      if(response.status == 400 ){
-        localStorage.removeItem("Token");
-        navigate("/login");
-      }
+      
     } else if (tableType === "Blogs") {
       if(userType==="Writer"){
  response = await fetchBloglistofwritter(page,rowsPerPage,userName ); 
@@ -82,10 +79,7 @@ export function useTable({ attributes, tableType, limitPerPage = 10 }) {
       setData(response.blogs);
       setPage(response.currentPage); 
       setTotalRecords(response.totalBlogs); 
-      if(response.status == 400 ){
-        localStorage.removeItem("Token");
-        navigate("/login");
-      } 
+     
       }
       else{
         response = await fetchallBloglist(page,rowsPerPage ); 
@@ -94,10 +88,7 @@ export function useTable({ attributes, tableType, limitPerPage = 10 }) {
       setData(response.blogs);
       setPage(response.currentPage); 
       setTotalRecords(response.totalBlogs); 
-      if(response.status == 400 ){
-        localStorage.removeItem("Token");
-        navigate("/login");
-      } 
+     
       }
      
     }
@@ -108,10 +99,7 @@ export function useTable({ attributes, tableType, limitPerPage = 10 }) {
       setData(response.userType);
       setPage(response.currentPage); 
       setTotalRecords(response.totalUserType); 
-      if(response.status == 400 ){
-        localStorage.removeItem("Token");
-        navigate("/login");
-      } 
+     
     }
      else if (tableType === "Tickets") {
       response = await fetchallTickets(page,rowsPerPage ); 
@@ -119,10 +107,9 @@ export function useTable({ attributes, tableType, limitPerPage = 10 }) {
       
       setData(response.ticketslist);
       setPage(response.currentPage);  
-      if(response.status == 400 ){
-        localStorage.removeItem("Token");
-        navigate("/login");
-      } 
+      
+      setTotalRecords(response.totalTickets); 
+     
     }
      else if (tableType === "Users") {
       response = await fetchallUserlist(page,rowsPerPage ); 
@@ -131,37 +118,25 @@ export function useTable({ attributes, tableType, limitPerPage = 10 }) {
       setData(response.data);
       setPage(response.currentPage); 
       setTotalRecords(response.totalUsers); 
-      if(response.status == 400 ){
-        localStorage.removeItem("Token");
-        navigate("/login");
-      } 
+     
     }
      else if (tableType === "Comments") {
       response = await fetchallCommentlist(page,rowsPerPage );
       setData(response.comments);
       setTotalRecords(response.totalComments|| 0); 
-      if(response.status == 400 ){
-        localStorage.removeItem("Token");
-        navigate("/login");
-      }
+      
     }
     else if (tableType === "Applications") {
       response = await fetchallApplication(page,rowsPerPage );
       setData(response.applications);
       setTotalRecords(response.totalApplication|| 0); 
-      if(response.status == 400 ){
-        localStorage.removeItem("Token");
-        navigate("/login");
-      }
+      
     }
     else if (tableType === "Testimonial") {
       response = await fetchallTestimonialslist(page,rowsPerPage );
       setData(response.testimonials);
       setTotalRecords(response.totalTestimonials|| 0); 
-      if(response.status == 400 ){
-        localStorage.removeItem("Token");
-        navigate("/login");
-      }
+      
     }
     else if (tableType === "Lead") {
         response = await fetchallLeads(page,rowsPerPage );
@@ -215,7 +190,7 @@ export function useTable({ attributes, tableType, limitPerPage = 10 }) {
       }
      
        else if (tableType === "Tickets") {
-        navigate(`/chats/${category._id}`);
+       window.open(`https://crm.plutosec.ca/ticketviewbyadmin/${category._id}`, '_blank');
       }
       else if (tableType === "Testimonial") {
         navigate(`/edit-testimonial/${category._id}`);
@@ -370,7 +345,7 @@ export function useTable({ attributes, tableType, limitPerPage = 10 }) {
                   <DeleteIcon />
                 </IconButton>
               ) : (
-                tableType !== "Comments" && (
+                tableType !== "Comments"  && tableType !== "Lead"  && tableType !== "Applications"  && tableType !== "Tickets"  &&(
                   <Button
                     sx={{
                       background: "var(--background-color)",
@@ -435,40 +410,51 @@ export function useTable({ attributes, tableType, limitPerPage = 10 }) {
                             />
                           </TableCell>
 
-                          {attributes.map((attr) => (
-                            <TableCell
-                              key={attr.id}
-                              sx={{ color: "var(--black-color)" }}
-                            >
-                              {(attr.id === "createdAt" || attr.id === "publishedDate") ? (
-                                formatDate(row[attr.id])
-                              ) : attr.id === "published" ? (
-                                <span
-                                  style={{
-                                    color: row[attr.id]
-                                      ? "var(--success-color)"
-                                      : "var(--warning-color)",
-                                    background: row[attr.id]
-                                      ? "var(--success-bgcolor)"
-                                      : "var(--warning-bgcolor)",
-                                    padding: "5px",
-                                    minWidth: "200px",
-                                    borderRadius:
-                                      "var(--default-border-radius)",
-                                  }}
-                                >
-                                  {row[attr.id] ? "Public" : "Private"}
-                                </span>
-                              ) : row[attr.id] === 0 ? (
-                                0
-                              ) : typeof getNestedValue(row, attr.id) ===
-                                "string" ? (
-                                truncateText(getNestedValue(row, attr.id), 30) // ✅ Truncate text safely
-                              ) : (
-                                getNestedValue(row, attr.id)
-                              )}
-                            </TableCell>
-                          ))}
+                         {attributes.map((attr) => (
+  <TableCell
+    key={attr.id}
+    sx={{ color: "var(--black-color)" }}
+  >
+    {attr.id === "createdAt" || attr.id === "publishedDate" ? (
+      formatDate(row[attr.id])
+    ) : attr.id === "published" ? (
+      <span
+        style={{
+          color: row[attr.id]
+            ? "var(--success-color)"
+            : "var(--warning-color)",
+          background: row[attr.id]
+            ? "var(--success-bgcolor)"
+            : "var(--warning-bgcolor)",
+          padding: "5px",
+          minWidth: "200px",
+          borderRadius: "var(--default-border-radius)",
+        }}
+      >
+        {row[attr.id] ? "Public" : "Private"}
+      </span>
+    ) : attr.id === "status" ? (
+      <span
+        style={{
+          color: row[attr.id] ? "green" : "orange",
+          background: row[attr.id] ? "#d4edda" : "#fff3cd",
+          padding: "5px",
+          minWidth: "100px",
+          borderRadius: "var(--default-border-radius)",
+        }}
+      >
+        {row[attr.id] ? "Answered" : "Pending"}
+      </span>
+    ) : row[attr.id] === 0 ? (
+      0
+    ) : typeof getNestedValue(row, attr.id) === "string" ? (
+      truncateText(getNestedValue(row, attr.id), 30)
+    ) : (
+      getNestedValue(row, attr.id)
+    )}
+  </TableCell>
+))}
+
 
 
 
