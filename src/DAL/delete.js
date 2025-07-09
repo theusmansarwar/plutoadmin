@@ -13,6 +13,21 @@ export const deleteAllBlogs = async (data) => {
   
   return invokeApi(reqObj);
 };
+//////////////////////
+export const deleteAllFeaturedBlogs = async (data) => {
+  const reqObj = {
+    path: `/blog/deletefeatured`,
+    method: "DELETE", // Ensure correct capitalization
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("Token")}`,
+    },
+    postData: data,
+  };
+  
+  return invokeApi(reqObj);
+};
+//////////
 export const deleteAllCategories = async (data) => {
   const reqObj = {
     path: `/category/delete`,
@@ -26,6 +41,21 @@ export const deleteAllCategories = async (data) => {
   
   return invokeApi(reqObj);
 };
+////////////////////////
+export const deleteAllServicesCategories = async (data) => {
+  const reqObj = {
+    path: `/category/delete`,
+    method: "DELETE", // Ensure correct capitalization
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("Token")}`,
+    },
+    postData: data,
+  };
+  
+  return invokeApi(reqObj);
+};
+////////////////////////
 
 export const deleteAllApplications = async (data) => {
   const reqObj = {

@@ -50,9 +50,35 @@ export const fetchallcategorylist = async (page, rowsPerPages) => {
   };
   return invokeApi(reqObj);
 };
+//////////////////////////////////////////////
+export const fetchallservicescategorylist = async (page, rowsPerPages) => {
+  const reqObj = {
+    path: `/category/view?limit=${rowsPerPages}&page=${page}`,
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("Token")}`,
+    },
+
+    body: {},
+  };
+  return invokeApi(reqObj);
+};
+//////////////////////////////////////////////
 export const fetchallBloglist = async ( page, rowsPerPages) => {
   const reqObj = {
     path: `/blog/adminlist?limit=${rowsPerPages}&page=${page}`,
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("Token")}`,
+    },
+
+    body: {},
+  };
+  return invokeApi(reqObj);
+};
+export const fetchFeaturedBloglist = async ( page, rowsPerPages) => {
+  const reqObj = {
+    path: `/blog/featuredadmin?limit=${rowsPerPages}&page=${page}`,
     method: "GET",
     headers: {
       Authorization: `Bearer ${localStorage.getItem("Token")}`,

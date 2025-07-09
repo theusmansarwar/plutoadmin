@@ -24,6 +24,20 @@ export const createnewCategory = async (data) => {
   };
   return invokeApi(reqObj);
 };
+//////////////////////
+export const createnewServicesCategory = async (data) => {
+
+  const reqObj = {
+    path: "/category/add",
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("Token")}`,
+    },
+    postData: data,
+  };
+  return invokeApi(reqObj);
+};
+/////////////////////
 export const createTestimonial = async (data) => {
 
   const reqObj = {

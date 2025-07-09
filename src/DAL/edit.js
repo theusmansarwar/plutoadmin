@@ -23,6 +23,18 @@ export const updateCategory = async (id,data) => {
   };
   return invokeApi(reqObj);
 };
+//////////////////////////////////////////////
+export const updateServicesCategory = async (id,data) => {
+ 
+  const reqObj = {
+    path: `/category/update/${id}`,
+    method: "PUT",
+    headers: {      Authorization: `Bearer ${localStorage.getItem("Token")}`,},
+    postData: data,
+  };
+  return invokeApi(reqObj);
+};
+//////////////////////////////////////////////
 export const updateusertype = async (id,data) => {
  
   const reqObj = {

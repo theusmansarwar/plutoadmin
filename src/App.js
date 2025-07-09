@@ -1,5 +1,11 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Routes, Route, useLocation, useNavigate, Navigate } from "react-router-dom";
+import {
+  Routes,
+  Route,
+  useLocation,
+  useNavigate,
+  Navigate,
+} from "react-router-dom";
 import "./App.css";
 import plutoseclogo from "./Assets/logo4.png";
 
@@ -18,6 +24,10 @@ import ViewApplication from "./Pages/Applications/ViewApplication";
 import UserType from "./Pages/Users/UserType";
 import Users from "./Pages/Users/Users";
 import Tickets from "./Pages/Tickets/Tickets";
+import ServicesCategories from "./Pages/ServicesCategory/ServicesCategory";
+import Services from "./Pages/Services/Services";
+import AddServices from "./Pages/Services/AddServices";
+import FeaturedBlogs from "./Pages/FeaturedBlogs/FeaturedBlogs";
 const App = ({ onLogout, message, userType }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -28,15 +38,18 @@ const App = ({ onLogout, message, userType }) => {
     { id: 2, name: "Leads", route: "/leads" },
     { id: 3, name: "Applications", route: "/applications" },
     { id: 4, name: "Blogs", route: "/blogs" },
-    { id: 5, name: "Categories", route: "/categories" },
-    { id: 6, name: "Comments", route: "/comments" },
-    { id: 7, name: "Testimonials", route: "/testimonials" },
-    { id: 8, name: "Users", route: "/users" },
-    { id: 9, name: "UsersType", route: "/usertype" },
-     { id: 10, name: "Tickets", route: "/tickets" },
+    { id: 5, name: "Featured Blogs", route: "/blogs/featured" },
+    { id: 6, name: "Categories", route: "/categories" },
+    // { id: 7, name: "Services Categories", route: "/services-categories" }, ///////////////////////////
+    // { id: 8, name: "Services", route: "/services" }, ///////////////////////////
+    { id: 7, name: "Comments", route: "/comments" },
+    { id: 8, name: "Testimonials", route: "/testimonials" },
+    { id: 9, name: "Users", route: "/users" },
+    { id: 10, name: "UsersType", route: "/usertype" },
+    { id: 11, name: "Tickets", route: "/tickets" },
   ];
 
-  const allowedRoutesForWriter = ["/blogs", "/categories", "/add-blog"];
+  const allowedRoutesForWriter = ["/blogs", "/categories", "/add-blog","/blogs/featured"];
   const isWriterRouteAllowed = () => {
     const pathname = location.pathname;
     return (
@@ -47,9 +60,7 @@ const App = ({ onLogout, message, userType }) => {
 
   const filteredItems =
     userType === "Writer"
-      ? allItems.filter((item) =>
-          allowedRoutesForWriter.includes(item.route)
-        )
+      ? allItems.filter((item) => allowedRoutesForWriter.includes(item.route))
       : allItems;
 
   useEffect(() => {
@@ -103,6 +114,8 @@ const App = ({ onLogout, message, userType }) => {
           <Route path="/categories" element={<Categories />} />
           <Route path="/add-blog" element={<AddBlog />} />
           <Route path="/edit-blog/:id" element={<AddBlog />} />
+          <Route path="/edit-featuredblog/:id" element={<AddBlog />} />
+          <Route path="/blogs/featured" element={<FeaturedBlogs />} />
 
           {/* Admin-only routes */}
           {userType !== "Writer" && (
@@ -112,13 +125,26 @@ const App = ({ onLogout, message, userType }) => {
               <Route path="/leads" element={<Leads />} />
               <Route path="/view-lead/:id" element={<ViewLead />} />
               <Route path="/applications" element={<Applications />} />
-              <Route path="/view-application/:id" element={<ViewApplication />} />
+              <Route
+                path="/view-application/:id"
+                element={<ViewApplication />}
+              />
               <Route path="/testimonials" element={<Testimonial />} />
               <Route path="/add-testimonial" element={<AddTestimonial />} />
-              <Route path="/edit-testimonial/:id" element={<AddTestimonial />} />
+              <Route
+                path="/edit-testimonial/:id"
+                element={<AddTestimonial />}
+              />
               <Route path="/usertype" element={<UserType />} />
               <Route path="/users" element={<Users />} />
-               <Route path="/tickets" element={<Tickets />} />
+              <Route path="/tickets" element={<Tickets />} />
+              {/* <Route
+                path="/services-categories"
+                element={<ServicesCategories />}
+              /> */}
+              {/* <Route path="/services" element={<Services />} /> */}
+              <Route path="/add-service" element={<AddServices />} />
+              <Route path="/edit-service/:id" element={<AddServices />} />
             </>
           )}
 
