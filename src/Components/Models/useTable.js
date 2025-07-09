@@ -375,6 +375,7 @@ export function useTable({ attributes, tableType, limitPerPage = 10 }) {
                 tableType !== "Comments" &&
                 tableType !== "Lead" &&
                 tableType !== "Applications" &&
+                tableType !== "Featured Blogs" &&
                 tableType !== "Tickets" && (
                   <Button
                     sx={{

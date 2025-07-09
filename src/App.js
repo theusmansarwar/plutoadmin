@@ -49,12 +49,13 @@ const App = ({ onLogout, message, userType }) => {
     { id: 11, name: "Tickets", route: "/tickets" },
   ];
 
-  const allowedRoutesForWriter = ["/blogs", "/categories", "/add-blog","/blogs/featured"];
+  const allowedRoutesForWriter = ["/blogs", "/categories", "/add-blog","/blogs/featured",];
   const isWriterRouteAllowed = () => {
     const pathname = location.pathname;
     return (
       allowedRoutesForWriter.includes(pathname) ||
-      pathname.startsWith("/edit-blog/")
+      pathname.startsWith("/edit-blog/") || pathname.startsWith("/edit-featuredblog/")
+
     );
   };
 
