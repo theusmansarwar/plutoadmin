@@ -31,7 +31,6 @@ const route = segments[1];
   const [detail, setDetail] = useState("");
   const [author, setAuthor] = useState("");
   const [newauthor, setNewAuthor] = useState("");
-  const [tags, setTags] = useState("");
   const [metaDescription, setMetaDescription] = useState("");
   const [slug, setSlug] = useState("");
   const [image, setImage] = useState(dummyimg);
@@ -69,7 +68,6 @@ const route = segments[1];
             setDescription(blog.description || "");
             setDetail(blog.detail || "");
             setAuthor(blog.author || "");
-            setTags(blog.tags || "");
             setMetaDescription(blog.metaDescription || "");
             setSlug(blog.slug || "");
             setCategoryId(blog.category?._id || "");
@@ -79,10 +77,6 @@ const route = segments[1];
             setFaqSchemaText(JSON.stringify(schema, null, 2));
             setIsFeatured(blog?.featured);
             setIsVisible(blog?.published);
-            if (blog?.publishedDate) {
-              const dateObj = new Date(blog.publishedDate);
-              setSelectedDateTime(dateObj.toISOString().slice(0, 16));
-            }
           }
         } catch (error) {
           console.error("Error fetching blog:", error);
@@ -118,7 +112,6 @@ const route = segments[1];
 
     const errorObj = {};
     if (!categoryId) errorObj.category = "Category is required.";
-    if (!selectedDateTime) errorObj.date = "Published Date is required.";
 
     try {
       JSON.parse(faqSchemaText);
@@ -138,13 +131,11 @@ const route = segments[1];
     formData.append("description", description);
     formData.append("detail", detail);
     formData.append("author", author || newauthor);
-    formData.append("tags", tags);
     formData.append("metaDescription", metaDescription);
     formData.append("slug", slug);
     formData.append("category", categoryId);
     formData.append("published", isVisible);
     formData.append("featured", isFeatured);
-    formData.append("publishedDate", new Date(selectedDateTime).toISOString());
     formData.append("faqSchema", faqSchemaText);
 
     if (fileInputRef.current?.files[0]) {
@@ -279,20 +270,8 @@ const route = segments[1];
         </select>
         {errors.category && <p className="error">{errors.category}</p>}
 
-        <input
-          type="text"
-          placeholder="Tags (comma-separated)"
-          value={tags}
-          onChange={(e) => setTags(e.target.value)}
-        />
-        {errors.tags && <p className="error">{errors.tags}</p>}
+        
 
-        <input
-          type="datetime-local"
-          value={selectedDateTime}
-          onChange={(e) => setSelectedDateTime(e.target.value)}
-        />
-        {errors.date && <p className="error">{errors.date}</p>}
 
         <JoditEditor
           ref={editor}

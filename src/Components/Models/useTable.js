@@ -199,10 +199,9 @@ export function useTable({ attributes, tableType, limitPerPage = 10 }) {
       setOpenUserModal(true);
     } else if (tableType === "Blogs") {
       navigate(`/edit-blog/${category._id}`);
-
-    }else if (tableType === "Featured Blogs") {
-      navigate(`/edit-featuredblog/${category._id}`);} 
-    else if (tableType === "Tickets") {
+    } else if (tableType === "Featured Blogs") {
+      navigate(`/edit-featuredblog/${category._id}`);
+    } else if (tableType === "Tickets") {
       window.open(
         `https://crm.plutosec.ca/ticketviewbyadmin/${category._id}`,
         "_blank"
@@ -232,10 +231,9 @@ export function useTable({ attributes, tableType, limitPerPage = 10 }) {
       let response;
       if (tableType === "Blogs") {
         response = await deleteAllBlogs({ ids: selected });
-      }
-      else if (tableType === "Featured Blogs") {
-        response = await deleteAllFeaturedBlogs({ ids: selected });}
-      else if (tableType === "Categories") {
+      } else if (tableType === "Featured Blogs") {
+        response = await deleteAllFeaturedBlogs({ ids: selected });
+      } else if (tableType === "Categories") {
         response = await deleteAllCategories({ ids: selected });
       } else if (tableType === "Comments") {
         response = await deleteAllComments({ ids: selected });
@@ -287,10 +285,9 @@ export function useTable({ attributes, tableType, limitPerPage = 10 }) {
       setModelData();
     } else if (tableType === "Blogs") {
       navigate("/add-blog");
-    } 
-    else if (tableType === "Featured Blogs") {
-      navigate("/add-blog");}
-    else if (tableType === "Testimonial") {
+    } else if (tableType === "Featured Blogs") {
+      navigate("/add-blog");
+    } else if (tableType === "Testimonial") {
       navigate("/add-testimonial");
     }
   };
@@ -367,7 +364,7 @@ export function useTable({ attributes, tableType, limitPerPage = 10 }) {
                 {tableType} List
               </Typography>
 
-              {selected.length > 0 ? (
+              {selected.length > 0 && tableType !== "Featured Blogs" ? (
                 <IconButton onClick={handleDeleteClick} sx={{ color: "red" }}>
                   <DeleteIcon />
                 </IconButton>
