@@ -9,7 +9,7 @@ import {
   FormControlLabel,
 } from "@mui/material";
 import { createnewServicesCategory } from "../../DAL/create";
-import {  updateServicesCategory } from "../../DAL/edit";
+import { updateServicesCategory } from "../../DAL/edit";
 import "./ModelStyle.css";
 import { MdClose } from "react-icons/md";
 
@@ -33,7 +33,7 @@ export default function AddServicesCategories({
   onResponse,
 }) {
   const fileInputRef = React.useRef(null);
-   const [selectedFile, setSelectedFile] = React.useState(null);
+  const [selectedFile, setSelectedFile] = React.useState(null);
   const [name, setName] = React.useState(Modeldata?.name || "");
   const [published, setPublished] = React.useState(
     Modeldata?.published || false
@@ -51,11 +51,13 @@ export default function AddServicesCategories({
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const categoryData = {
-      name: name,
-      published: published,
-      thumbnail:selectedFile
-    };
+    const categoryData = new FormData();
+    categoryData.append("name", name);
+    categoryData.append("published", published);
+    if (selectedFile) {
+      categoryData.append("thumbnail", selectedFile);
+    }
+
     let response;
     if (Modeltype === "Add") {
       response = await createnewServicesCategory(categoryData); // Send FormData
@@ -72,19 +74,20 @@ export default function AddServicesCategories({
     setOpen(false);
   };
   ////////////////////////////////////////////
-   const handleFileChange = (event) => {
+  const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
       setSelectedFile(file);
+      console.log(selectedFile);
     }
   };
-   const handleRemoveFile = () => {
+  const handleRemoveFile = () => {
     setSelectedFile(null);
     fileInputRef.current.value = null;
   };
   const formatFileName = (filename) => {
     const dotIndex = filename.lastIndexOf(".");
-    if (dotIndex === -1) return filename; 
+    if (dotIndex === -1) return filename;
 
     const name = filename.slice(0, dotIndex);
     const ext = filename.slice(dotIndex);
@@ -94,7 +97,7 @@ export default function AddServicesCategories({
     }
     return name + ext;
   };
-//////////////////////////////////////////////
+  //////////////////////////////////////////////
   return (
     <Modal
       open={open}
@@ -117,28 +120,28 @@ export default function AddServicesCategories({
           onChange={(e) => setName(e.target.value)}
         />
         <div className="file-input-wrapper">
-            <input
-              type="file"
-              id="customFile"
-              ref={fileInputRef}
-              onChange={handleFileChange}
-              style={{ display: "none" }}
-            />
-            <label htmlFor="customFile" className="custom-file-label">
-              Choose File
-            </label>
-            <span className="file-name">
-              {selectedFile
-                ? formatFileName(selectedFile.name)
-                : "No file chosen"}
-            </span>
+          <input
+            type="file"
+            id="customFile"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            style={{ display: "none" }}
+          />
+          <label htmlFor="customFile" className="custom-file-label">
+            Choose File
+          </label>
+          <span className="file-name">
+            {selectedFile
+              ? formatFileName(selectedFile.name)
+              : "No file chosen"}
+          </span>
 
-            {selectedFile && (
-              <div className="cancel-btn" onClick={handleRemoveFile}>
-                <MdClose />
-              </div>
-            )}
-          </div>
+          {selectedFile && (
+            <div className="cancel-btn" onClick={handleRemoveFile}>
+              <MdClose />
+            </div>
+          )}
+        </div>
         <FormControlLabel
           control={
             <Switch
@@ -158,7 +161,6 @@ export default function AddServicesCategories({
             marginTop: "10px",
           }}
         >
-          
           <Button
             type="button"
             variant="contained"
