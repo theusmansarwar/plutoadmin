@@ -7,11 +7,10 @@ import {
   TextField,
   Switch,
   FormControlLabel,
+  TextareaAutosize,
 } from "@mui/material";
-import { createnewServicesCategory } from "../../DAL/create";
-import {  updateServicesCategory } from "../../DAL/edit";
-import "./ModelStyle.css";
-import { MdClose } from "react-icons/md";
+import { createnewCategory, createNewOffering } from "../../DAL/create";
+import { updateCategory, updateOffering } from "../../DAL/edit";
 
 const style = {
   position: "absolute",
@@ -25,16 +24,19 @@ const style = {
   borderRadius: "12px",
 };
 
-export default function AddServicesCategories({
+export default function KeyOfferings({
   open,
   setOpen,
   Modeltype,
   Modeldata,
   onResponse,
+  serviceid,
 }) {
-  const fileInputRef = React.useRef(null);
-   const [selectedFile, setSelectedFile] = React.useState(null);
   const [name, setName] = React.useState(Modeldata?.name || "");
+  const [itemsText, setItemsText] = React.useState(
+    Modeldata?.items ? Modeldata.items.join("\n") : ""
+  );
+
   const [published, setPublished] = React.useState(
     Modeldata?.published || false
   );
@@ -42,6 +44,7 @@ export default function AddServicesCategories({
 
   React.useEffect(() => {
     setName(Modeldata?.name || "");
+    setItemsText(Modeldata?.items ? Modeldata.items.join("\n") : "");
     setPublished(Modeldata?.published || false);
     setId(Modeldata?._id || "");
   }, [Modeldata]);
@@ -50,17 +53,23 @@ export default function AddServicesCategories({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const itemsArray = itemsText
+      .split("\n")
+      .map((item) => item.trim())
+      .filter((item) => item !== "");
 
     const categoryData = {
       name: name,
       published: published,
-      thumbnail:selectedFile
+      items: itemsArray,
+      serviceid: serviceid,
     };
+
     let response;
     if (Modeltype === "Add") {
-      response = await createnewServicesCategory(categoryData); // Send FormData
+      response = await createNewOffering(categoryData); // Send FormData
     } else {
-      response = await updateServicesCategory(id, categoryData);
+      response = await updateOffering(id, categoryData);
     }
     if (response.status == 201) {
       onResponse({ messageType: "success", message: response.message });
@@ -71,30 +80,7 @@ export default function AddServicesCategories({
     }
     setOpen(false);
   };
-  ////////////////////////////////////////////
-   const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      setSelectedFile(file);
-    }
-  };
-   const handleRemoveFile = () => {
-    setSelectedFile(null);
-    fileInputRef.current.value = null;
-  };
-  const formatFileName = (filename) => {
-    const dotIndex = filename.lastIndexOf(".");
-    if (dotIndex === -1) return filename; 
 
-    const name = filename.slice(0, dotIndex);
-    const ext = filename.slice(dotIndex);
-
-    if (name.length > 10) {
-      return name.slice(0, 10) + "..." + ext;
-    }
-    return name + ext;
-  };
-//////////////////////////////////////////////
   return (
     <Modal
       open={open}
@@ -104,41 +90,29 @@ export default function AddServicesCategories({
     >
       <Box sx={style}>
         <Typography id="modal-title" variant="h6" component="h2">
-          {Modeltype} Services Category
+          {Modeltype} Offerings
         </Typography>
         <TextField
           sx={{ marginTop: "10px", borderRadius: "6px" }}
           fullWidth
           required
-          label="Category Name"
+          label="Offering Title"
           variant="outlined"
           name="name"
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
-        <div className="file-input-wrapper">
-            <input
-              type="file"
-              id="customFile"
-              ref={fileInputRef}
-              onChange={handleFileChange}
-              style={{ display: "none" }}
-            />
-            <label htmlFor="customFile" className="custom-file-label">
-              Choose File
-            </label>
-            <span className="file-name">
-              {selectedFile
-                ? formatFileName(selectedFile.name)
-                : "No file chosen"}
-            </span>
+        <TextField
+          sx={{ marginTop: "10px", borderRadius: "6px" }}
+          fullWidth
+          multiline
+          minRows={4}
+          label="Offering Items (one per line)"
+          variant="outlined"
+          value={itemsText}
+          onChange={(e) => setItemsText(e.target.value)}
+        />
 
-            {selectedFile && (
-              <div className="cancel-btn" onClick={handleRemoveFile}>
-                <MdClose />
-              </div>
-            )}
-          </div>
         <FormControlLabel
           control={
             <Switch
@@ -158,7 +132,6 @@ export default function AddServicesCategories({
             marginTop: "10px",
           }}
         >
-          
           <Button
             type="button"
             variant="contained"

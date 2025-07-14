@@ -1,22 +1,24 @@
 :root {
---background-color:#03b7c4;
---headings-color: var(--background-color);
---shadow-low1:#00d0e74a;
---shadow-low2:#006bcf00;
---shadow-low3:#91f3fe;
---default-box-shadow:0 0 4px var(--background-color);
---left-space:5%;
---mid-space:90%;
---right-space:5%;
---default-border:1px solid var(--headings-color);
---text-color:white;
---font-family-base: var(--font-montserrat);
---default-p-size:16px;
---default-p-size2:14px;
---default-border-radius:6px;
-
+  --background-color: #03b7c4;
+  --headings-color: var(--background-color);
+  --shadow-low1: #00d0e74a;
+  --shadow-low2: #006bcf00;
+  --shadow-low3: #91f3fe;
+  --default-box-shadow: 0 0 4px var(--background-color);
+  --left-space: 5%;
+  --mid-space: 90%;
+  --right-space: 5%;
+  --default-border: 1px solid var(--headings-color);
+  --text-color: white;
+  --font-family-base: var(--font-montserrat);
+  --default-p-size: 16px;
+  --default-p-size2: 14px;
+  --default-border-radius: 6px;
+  --warning-color: rgb(255, 38, 0);
+   --warning-bgcolor: rgba(255, 38, 0, 0.426);
+  --success-color: rgb(0, 101, 0);
+  --success-bgcolor:rgba(2, 216, 2, 0.512);
 }
-
 
 body {
   font-family: "Nunito", sans-serif;
@@ -28,51 +30,46 @@ body {
   display: flex;
   height: 100vh;
 }
-p, h1, h2, h3, h4, h5, h6{
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   padding: 0%;
   margin: 0%;
-
 }
-
-
 
 .home-plutosec-logo {
   width: 80%;
   margin-top: 20px;
 }
 
-
-.userprofile{
- 
+.userprofile {
   height: 90px;
   width: 100%;
- display: flex;
+  display: flex;
 
- align-items: center;
-
+  align-items: center;
 }
-.userprofile .avatar{
+.userprofile .avatar {
   height: 50px;
   width: 50px;
   margin-left: 10px;
   border-radius: 50%;
-
 }
-.userprofile .avatar-data{
- 
+.userprofile .avatar-data {
   margin-left: 10px;
-
 }
-.userprofile .avatar-data p{
-font-size: 12px;
-
-
+.userprofile .avatar-data p {
+  font-size: 12px;
 }
 
 .app-side-bar {
   width: 15%;
   height: 100vh;
- 
+
   gap: 30px;
   border-right: 1px solid rgb(217, 217, 217);
   display: flex;
@@ -82,17 +79,17 @@ font-size: 12px;
 .app-right {
   width: 81%;
   height: calc(100vh - 60px);
- padding: 30px;
+  padding: 30px;
   overflow-y: scroll;
   scrollbar-width: none;
 }
 
-.Dashboard , .admin-body{
+.Dashboard,
+.admin-body {
   height: 96vh;
   padding: 2vh 3%;
   overflow-y: scroll;
 }
-
 
 .mini-search-section {
   display: flex;
@@ -161,10 +158,10 @@ scrollbar-width: none;
   bottom: 50px;
   display: flex;
   justify-content: center;
-  animation:slideIn 0.5s ease-in ; /* Animation for sliding in */
+  animation: slideIn 0.5s ease-in; /* Animation for sliding in */
 }
 .Alert-message-area.hidden {
-  animation:slideOut 0.5s ease-out ;
+  animation: slideOut 0.5s ease-out;
 }
 /* Slide-in animation */
 @keyframes slideIn {
@@ -181,18 +178,11 @@ scrollbar-width: none;
 @keyframes slideOut {
   0% {
     bottom: 50px; /* Starts from below the screen */
-
   }
   100% {
     bottom: -20px; /* Ends at the defined position */
-  
-
   }
 }
-
-
-
-
 
 @media screen and (max-width: 820px) {
   .app-side-bar {

@@ -44,7 +44,20 @@ export const deleteAllCategories = async (data) => {
 ////////////////////////
 export const deleteAllServicesCategories = async (data) => {
   const reqObj = {
-    path: `/category/delete`,
+    path: `/servicecategory/delete`,
+    method: "DELETE", // Ensure correct capitalization
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("Token")}`,
+    },
+    postData: data,
+  };
+  
+  return invokeApi(reqObj);
+};
+export const deleteAllServices = async (data) => {
+  const reqObj = {
+    path: `/service/delete-many`,
     method: "DELETE", // Ensure correct capitalization
     headers: {
       "Content-Type": "application/json",
@@ -56,6 +69,58 @@ export const deleteAllServicesCategories = async (data) => {
   return invokeApi(reqObj);
 };
 ////////////////////////
+export const deleteOfferingById = async (id,data) => {
+  const reqObj = {
+    path: `/offering/delete${id}`,
+    method: "DELETE", // Ensure correct capitalization
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("Token")}`,
+    },
+    postData: data,
+  };
+  
+  return invokeApi(reqObj);
+};
+export const deleteAllOfferings = async (data) => {
+  const reqObj = {
+    path: `/offering/delete-many`,
+    method: "DELETE", // Ensure correct capitalization
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("Token")}`,
+    },
+    postData: data,
+  };
+  
+  return invokeApi(reqObj);
+};
+export const deleteAllSuccessStories = async (data) => {
+  const reqObj = {
+    path: `/successstories/delete-many`,
+    method: "DELETE", // Ensure correct capitalization
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("Token")}`,
+    },
+    postData: data,
+  };
+  
+  return invokeApi(reqObj);
+};
+export const deleteSuccessStoryById = async (id,data) => {
+  const reqObj = {
+    path: `/successstories/delete${id}`,
+    method: "DELETE", // Ensure correct capitalization
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("Token")}`,
+    },
+    postData: data,
+  };
+  
+  return invokeApi(reqObj);
+};
 
 export const deleteAllApplications = async (data) => {
   const reqObj = {

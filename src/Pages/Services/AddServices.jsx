@@ -1,81 +1,70 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import "./AddServices.css";
-import { IoMdCloseCircle } from "react-icons/io";
-import JoditEditor from "jodit-react";
-import dummyimg from "../../Assets/upload-background.PNG";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAlert } from "../../Components/Alert/AlertContext";
-import { fetchBlogById, fetchcategorylist } from "../../DAL/fetch";
-import { updateBlog } from "../../DAL/edit";
-import { createBlog } from "../../DAL/create";
-import { baseUrl } from "../../Config/Config";
+import {
+  fetchallservicescategorylist,
+  fetchservicebyid,
+} from "../../DAL/fetch";
+import { createNewService } from "../../DAL/create";
+import { useTable1 } from "../../Components/Models/useTable1";
+import { useTable2 } from "../../Components/Models/useTable2";
+import { updateService } from "../../DAL/edit";
 
 const AddServices = () => {
-  const { id } = useParams();
+  const path = window.location.pathname;
+  const segments = path.split("/");
+
+  const route = segments[1];
   const { showAlert } = useAlert();
   const navigate = useNavigate();
 
-  const [selectedDateTime, setSelectedDateTime] = useState("");
-  const [faqSchema, setFaqSchema] = useState({});
-  const [faqSchemaText, setFaqSchemaText] = useState("{}");
-
+  // State for form fields
   const [title, setTitle] = useState("");
   const [cta, setCta] = useState("");
   const [description, setDescription] = useState("");
   const [metaDescription, setMetaDescription] = useState("");
   const [slug, setSlug] = useState("");
-  const [image, setImage] = useState(dummyimg);
   const [isVisible, setIsVisible] = useState(true);
   const [categoryId, setCategoryId] = useState("");
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [offeringData, setOfferingData] = useState([]);
+  const [storiesData, setStoriesData] = useState([]);
 
-  const fileInputRef = useRef(null);
-  const editor = useRef(null);
-
-  const config = useMemo(
-    () => ({
-      readonly: false,
-      uploader: { insertImageAsBase64URI: true },
-      placeholder: "Start typing...",
-      imageExtensions: ["jpg", "jpeg", "png", "gif", "bmp", "svg"],
-    }),
-    []
-  );
+  const { id } = useParams();
 
   useEffect(() => {
-     const user = JSON.parse(localStorage.getItem("user"));
-   const userName = user?.name || "";
     if (id) {
-      const fetchBlog = async () => {
+      const fetchService = async () => {
         try {
-          const response = await fetchBlogById(id);
+          const response = await fetchservicebyid(id);
           if (response.status === 200) {
-            const blog = response.blog;
-            setTitle(blog.title || "");
-            setCta(blog.cta || "");///////////////////////
-            setDescription(blog.description || "");
-            
-            setMetaDescription(blog.metaDescription || "");
-            setSlug(blog.slug || "");
-            setCategoryId(blog.category?._id || "");
-            setImage(blog.thumbnail ? baseUrl + blog.thumbnail : dummyimg);
-            setIsVisible(blog?.published);
-            
+            const service = response.service;
+            setTitle(service.title || "");
+            setCta(service.cta || "");
+            setDescription(service.description || "");
+            setMetaDescription(service.metaDescription || "");
+            setSlug(service.slug || "");
+            setCategoryId(service.category?._id || "");
+            setOfferingData(service.offerings || []);
+            setStoriesData(service.successstories);
           }
         } catch (error) {
           console.error("Error fetching blog:", error);
         }
       };
-      fetchBlog();
+      fetchService();
     }
   }, [id]);
 
   useEffect(() => {
+    // Fetch service categories on mount
     const fetchCategories = async () => {
       try {
-        const response = await fetchcategorylist();
+        const response = await fetchallservicescategorylist();
+
         if (response && response.categories) {
           setCategories(response.categories);
         }
@@ -86,25 +75,18 @@ const AddServices = () => {
     fetchCategories();
   }, []);
 
-  const handleFileChange = (event) => {
-    if (event.target.files?.[0]) {
-      const file = event.target.files[0];
-      setImage(URL.createObjectURL(file));
-    }
-  };
-
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    // Validate required fields
     const errorObj = {};
     if (!categoryId) errorObj.category = "Category is required.";
-    if (!selectedDateTime) errorObj.date = "Published Date is required.";
-
-    try {
-      JSON.parse(faqSchemaText);
-    } catch {
-      errorObj.faqSchema = "Schema JSON is invalid.";
-    }
+    if (!title) errorObj.title = "Title is required.";
+    if (!cta) errorObj.cta = "Cta is required.";
+    if (!description) errorObj.description = "Description is required.";
+    if (!metaDescription)
+      errorObj.metaDescription = "Meta Description is required.";
+    if (!slug) errorObj.slug = "Slug is required.";
 
     if (Object.keys(errorObj).length > 0) {
       setErrors(errorObj);
@@ -113,22 +95,20 @@ const AddServices = () => {
 
     setLoading(true);
 
-    const formData = new FormData();
-    formData.append("title", title);
-    formData.append("description", description);
-    formData.append("metaDescription", metaDescription);
-    formData.append("slug", slug);
-    formData.append("category", categoryId);
-    formData.append("published", isVisible);
-
-    if (fileInputRef.current?.files[0]) {
-      formData.append("thumbnail", fileInputRef.current.files[0]);
-    }
-
     try {
+      const newServiceData = {
+        title,
+        cta,
+        description,
+        metaDescription,
+        slug,
+        category: categoryId,
+        published: isVisible,
+      };
+      console.log(newServiceData);
       const response = id
-        ? await updateBlog(id, formData)
-        : await createBlog(formData);
+        ? await updateService(id, newServiceData)
+        : await createNewService(newServiceData);
 
       if (response.status === 200 || response.status === 201) {
         showAlert("success", response.message);
@@ -139,6 +119,8 @@ const AddServices = () => {
           newErrors[field.name] = field.message;
         });
         setErrors(newErrors);
+      } else {
+        showAlert("error", response.message || "Something went wrong!");
       }
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -147,6 +129,26 @@ const AddServices = () => {
       setLoading(false);
     }
   };
+  const attributes1 = [
+    { id: "name", label: "Offering Title" },
+    { id: "published", label: "Visibility" },
+  ];
+
+  const { tableUI1 } = useTable1({
+    attributes1,
+    tableType: "Offerings",
+    data: offeringData,
+  });
+  const attributes2 = [
+    { id: "name", label: "Success Story Title" },
+    { id: "published", label: "Visibility" },
+  ];
+
+  const { tableUI2 } = useTable2({
+    attributes2,
+    tableType: "Success Stories",
+    data: storiesData,
+  });
 
   return (
     <div className="AddPost">
@@ -154,72 +156,63 @@ const AddServices = () => {
         <h3>{id ? "Edit Service" : "Add Service"}</h3>
         <div className="upper-section">
           <div className="left">
+            <label htmlFor="title">Title</label>
+            {errors.title && <p className="error">{errors.title}</p>}
             <input
+              id="title"
               type="text"
               placeholder="Title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
-            {errors.title && <p className="error">{errors.title}</p>}
-
-            <textarea /////////////////////////////////
-              placeholder="CTA"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-            {errors.description && <p className="error">{errors.description}</p>}
+            <label htmlFor="metadescription">Meta Description</label>
+            {errors.metaDescription && (
+              <p className="error">{errors.metaDescription}</p>
+            )}
             <textarea
-              placeholder="Description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-            {errors.description && <p className="error">{errors.description}</p>}
-
-            <textarea
+              id="metadescription"
               placeholder="Meta Description"
               value={metaDescription}
               onChange={(e) => setMetaDescription(e.target.value)}
             />
-            {errors.metaDescription && <p className="error">{errors.metaDescription}</p>}
-
-    
-          </div>
-
-          <div
-            className="image-container"
-            style={{ border: errors.thumbnail ? "2px solid red" : "" }}
-          >
-            <img
-              src={image}
-              alt="Thumbnail"
-              onClick={() => fileInputRef.current?.click()}
+            <label htmlFor="description">Description</label>
+            {errors.description && (
+              <p className="error">{errors.description}</p>
+            )}
+            <textarea
+              id="description"
+              placeholder="Description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
             />
-            <IoMdCloseCircle
-              className="remove-icon"
-              onClick={() => {
-                setImage(dummyimg);
-                fileInputRef.current.value = null;
-              }}
-            />
+            <label htmlFor="cta">CTA</label>
+            {errors.cta && <p className="error">{errors.cta}</p>}
             <input
-              type="file"
-              accept="image/png, image/jpeg, image/webp"
-              style={{ display: "none" }}
-              ref={fileInputRef}
-              onChange={handleFileChange}
+              id="cta"
+              type="text"
+              placeholder="CTA"
+              value={cta}
+              onChange={(e) => setCta(e.target.value)}
+            />
+
+            <label htmlFor="slug">Slug</label>
+            {errors.slug && <p className="error">{errors.slug}</p>}
+            <input
+              id="slug"
+              type="text"
+              placeholder="Slug"
+              value={slug}
+              onChange={(e) => setSlug(e.target.value)}
             />
           </div>
         </div>
-
-        <input
-          type="text"
-          placeholder="Slug"
-          value={slug}
-          onChange={(e) => setSlug(e.target.value)}
-        />
-        {errors.slug && <p className="error">{errors.slug}</p>}
-
-        <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)}>
+        <label htmlFor="category">Service Category</label>
+        {errors.category && <p className="error">{errors.category}</p>}
+        <select
+          value={categoryId}
+          id="category"
+          onChange={(e) => setCategoryId(e.target.value)}
+        >
           <option value="">Select a category</option>
           {categories.map((category) => (
             <option key={category._id} value={category._id}>
@@ -227,22 +220,13 @@ const AddServices = () => {
             </option>
           ))}
         </select>
-        {errors.category && <p className="error">{errors.category}</p>}
 
-       
-       
-
-        
-
-        {/* <JoditEditor
-          ref={editor}
-          value={detail}
-          config={config}
-          tabIndex={1}
-          onChange={(newContent) => setDetail(newContent)}
-        /> */}
-        {/* {errors.detail && <p className="error">{errors.detail}</p>} */}
-
+        {route === "edit-service" && (
+          <>
+            {tableUI1}
+            {tableUI2}
+          </>
+        )}
         <div className="toggle-container">
           <span className="toggle-label">
             Service Visibility:{" "}
@@ -261,11 +245,15 @@ const AddServices = () => {
         </div>
 
         <div className="button-sections">
-          <button type="button" className="cancelbtn" onClick={() => navigate("/services")}>
+          <button
+            type="button"
+            className="cancelbtn"
+            onClick={() => navigate("/services")}
+          >
             Cancel
           </button>
           <button className="published" type="submit" disabled={loading}>
-            {loading ? "Saving..." : id ? "Update Services" : "Save"}
+            {loading ? "Saving..." : "Save"}
           </button>
         </div>
       </form>

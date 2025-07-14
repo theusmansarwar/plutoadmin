@@ -40,13 +40,14 @@ const App = ({ onLogout, message, userType }) => {
     { id: 4, name: "Blogs", route: "/blogs" },
     { id: 5, name: "Featured Blogs", route: "/blogs/featured" },
     { id: 6, name: "Categories", route: "/categories" },
-    // { id: 7, name: "Services Categories", route: "/services-categories" }, ///////////////////////////
-    // { id: 8, name: "Services", route: "/services" }, ///////////////////////////
+   
     { id: 7, name: "Comments", route: "/comments" },
     { id: 8, name: "Testimonials", route: "/testimonials" },
     { id: 9, name: "Users", route: "/users" },
     { id: 10, name: "UsersType", route: "/usertype" },
     { id: 11, name: "Tickets", route: "/tickets" },
+     { id: 12, name: "Services Categories", route: "/services-categories" }, ///////////////////////////
+    { id: 13, name: "Services", route: "/services" }, ///////////////////////////
   ];
 
   const allowedRoutesForWriter = ["/blogs", "/categories", "/add-blog","/blogs/featured",];
@@ -139,11 +140,11 @@ const App = ({ onLogout, message, userType }) => {
               <Route path="/usertype" element={<UserType />} />
               <Route path="/users" element={<Users />} />
               <Route path="/tickets" element={<Tickets />} />
-              {/* <Route
+              <Route
                 path="/services-categories"
                 element={<ServicesCategories />}
-              /> */}
-              {/* <Route path="/services" element={<Services />} /> */}
+              />
+              <Route path="/services" element={<Services />} />
               <Route path="/add-service" element={<AddServices />} />
               <Route path="/edit-service/:id" element={<AddServices />} />
             </>

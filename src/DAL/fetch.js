@@ -53,7 +53,31 @@ export const fetchallcategorylist = async (page, rowsPerPages) => {
 //////////////////////////////////////////////
 export const fetchallservicescategorylist = async (page, rowsPerPages) => {
   const reqObj = {
-    path: `/category/view?limit=${rowsPerPages}&page=${page}`,
+    path: `/servicecategory/view?limit=${rowsPerPages}&page=${page}`,
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("Token")}`,
+    },
+
+    body: {},
+  };
+  return invokeApi(reqObj);
+};
+export const fetchallserviceslist = async (page, rowsPerPages) => {
+  const reqObj = {
+    path: `/service/listbyadmin?limit=${rowsPerPages}&page=${page}`,
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("Token")}`,
+    },
+
+    body: {},
+  };
+  return invokeApi(reqObj);
+};
+export const fetchservicebyid = async (id) => {
+  const reqObj = {
+    path: `/service/get/${id}`,
     method: "GET",
     headers: {
       Authorization: `Bearer ${localStorage.getItem("Token")}`,

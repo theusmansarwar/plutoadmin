@@ -7,7 +7,6 @@ const Services = () => {
     { id: "title", label: "Service Title" },
     { id: "category.name", label: "Category" },
     { id: "published", label: "Visibility" },
-    { id: "publishedDate", label: "Published At" },
     { id: "createdAt", label: "Created At" },
   ];
 

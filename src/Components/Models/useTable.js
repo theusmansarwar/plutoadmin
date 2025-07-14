@@ -22,6 +22,8 @@ import {
   fetchallcategorylist,
   fetchallCommentlist,
   fetchallLeads,
+  fetchallservicescategorylist,
+  fetchallserviceslist,
   fetchallTestimonialslist,
   fetchallTickets,
   fetchallUserlist,
@@ -40,6 +42,8 @@ import {
   deleteAllComments,
   deleteAllFeaturedBlogs,
   deleteAllLeads,
+  deleteAllServices,
+  deleteAllServicesCategories,
   deleteAllTestimonials,
   deleteAllUsers,
   deleteAllUsersType,
@@ -85,14 +89,14 @@ export function useTable({ attributes, tableType, limitPerPage = 10 }) {
       setTotalRecords(response.categories.length);
     } else if (tableType === "Services Categories") {
       ///////////////////////////
-      response = await fetchallcategorylist(page, rowsPerPage);
+      response = await fetchallservicescategorylist(page, rowsPerPage);
       setData(response.categories);
       setTotalRecords(response.categories.length);
     } else if (tableType === "Services") {
       ///////////////////////////
-      response = await fetchallcategorylist(page, rowsPerPage);
-      setData(response.categories);
-      setTotalRecords(response.categories.length);
+      response = await fetchallserviceslist(page, rowsPerPage);
+      setData(response.servicelist);
+      setTotalRecords(response.totalservices);
     } else if (tableType === "Blogs") {
       if (userType === "Writer") {
         response = await fetchBloglistofwritter(page, rowsPerPage, userName);
@@ -235,6 +239,10 @@ export function useTable({ attributes, tableType, limitPerPage = 10 }) {
         response = await deleteAllFeaturedBlogs({ ids: selected });
       } else if (tableType === "Categories") {
         response = await deleteAllCategories({ ids: selected });
+      } else if (tableType === "Services Categories") {
+        response = await deleteAllServicesCategories({ ids: selected });
+      } else if (tableType === "Services") {
+        response = await deleteAllServices({ ids: selected });
       } else if (tableType === "Comments") {
         response = await deleteAllComments({ ids: selected });
       } else if (tableType === "Lead") {
