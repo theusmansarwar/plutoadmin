@@ -3,6 +3,7 @@ import './ViewApplications.css';
 import { fetchSingleApplication } from '../../DAL/fetch';
 import { useParams } from 'react-router-dom';
 import { formatDate } from '../../Utils/Formatedate';
+import { fileUrl } from '../../Config/Config';
 
 const ViewApplication = () => {
   const { id } = useParams();
@@ -21,7 +22,7 @@ const ViewApplication = () => {
     return <p>Loading...</p>;
   }
 
-  const fileUrl = `https://plutosec.ca/api${data.resume}`; // Replace with your actual base URL
+  const file = `${fileUrl}${data.resume}`; // Replace with your actual base URL
   const extension = data.resume?.split('.').pop().toLowerCase();
 
   const isPDF = extension === 'pdf';
@@ -31,7 +32,7 @@ const ViewApplication = () => {
     if (isPDF) {
       return (
         <iframe
-          src={fileUrl}
+          src={file}
           title="PDF Preview"
           style={{ width: '100%', height: '500px', marginTop: '8px' }}
         />
@@ -74,7 +75,7 @@ const ViewApplication = () => {
         </div>
 
         <a
-          href={fileUrl}
+          href={file}
           target="_blank"
           rel="noopener noreferrer"
           className="download-link"
