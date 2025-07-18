@@ -50,6 +50,28 @@ export const fetchallcategorylist = async (page, rowsPerPages) => {
   };
   return invokeApi(reqObj);
 };
+export const searchBlog= async (title) => {
+  const reqObj = {
+    path: `/blog/search?title=${title}`,
+    method: "GET",
+    headers: {
+    },
+
+    body: {},
+  };
+  return invokeApi(reqObj);
+};
+export const searchService= async (title) => {
+  const reqObj = {
+    path: `/service/search?title=${title}`,
+    method: "GET",
+    headers: {
+    },
+
+    body: {},
+  };
+  return invokeApi(reqObj);
+};
 //////////////////////////////////////////////
 export const fetchallservicescategorylist = async (page, rowsPerPages) => {
   const reqObj = {

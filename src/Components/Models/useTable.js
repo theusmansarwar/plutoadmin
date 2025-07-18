@@ -14,8 +14,11 @@ import {
   Checkbox,
   Button,
   IconButton,
+  TextField,
+  InputAdornment,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
+import SearchIcon from "@mui/icons-material/Search";
 import {
   fetchallApplication,
   fetchallBloglist,
@@ -30,6 +33,8 @@ import {
   fetchallUserTypelist,
   fetchBloglistofwritter,
   fetchFeaturedBloglist,
+  searchBlog,
+  searchService,
 } from "../../DAL/fetch";
 import { formatDate } from "../../Utils/Formatedate";
 import truncateText from "../../truncateText";
@@ -74,9 +79,23 @@ export function useTable({ attributes, tableType, limitPerPage = 10 }) {
   const [modeltype, setModeltype] = useState("Add");
   const [modelData, setModelData] = useState({});
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [searchQueryBlog, setSearchQueryBlog] = useState("");
+  const [searchQueryService, setSearchQueryService] = useState("");
+
   useEffect(() => {
     fetchData();
   }, [page, rowsPerPage]);
+
+  const handleBlogSearch = async () => {
+    const response = await searchBlog(searchQueryBlog);
+    setData(response?.blogs);
+    setTotalRecords(response?.blogs?.length);
+  };
+  const handleServiceSearch = async () => {
+    const response = await searchService(searchQueryService);
+    setData(response?.services);
+    setTotalRecords(response?.services?.length);
+  };
 
   const fetchData = async () => {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -364,7 +383,14 @@ export function useTable({ attributes, tableType, limitPerPage = 10 }) {
 
         <Box sx={{ width: "100%" }}>
           <Paper sx={{ width: "100%", maxHeight: "95vh", boxShadow: "none" }}>
-            <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Toolbar
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                flexWrap: "wrap",
+                gap: 2,
+              }}
+            >
               <Typography
                 variant="h5"
                 sx={{ color: "var(--background-color)" }}
@@ -372,29 +398,107 @@ export function useTable({ attributes, tableType, limitPerPage = 10 }) {
                 {tableType} List
               </Typography>
 
-              {selected.length > 0 && tableType !== "Featured Blogs" ? (
-                <IconButton onClick={handleDeleteClick} sx={{ color: "red" }}>
-                  <DeleteIcon />
-                </IconButton>
-              ) : (
-                tableType !== "Comments" &&
-                tableType !== "Lead" &&
-                tableType !== "Applications" &&
-                tableType !== "Featured Blogs" &&
-                tableType !== "Tickets" && (
-                  <Button
+              <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                {tableType === "Blogs" && (
+                  <TextField
+                    size="small"
+                    placeholder="Search..."
+                    variant="outlined"
+                    value={searchQueryBlog}
+                    onChange={(e) => setSearchQueryBlog(e.target.value)}
                     sx={{
-                      background: "var(--background-color)",
-                      color: "var(--text-color)",
-                      borderRadius: "var(--default-border-radius)",
-                      "&:hover": { background: "var(--shadow-low3)" },
+                      minWidth: 200,
+                      backgroundColor: "white",
+                      borderRadius: 1,
+                      "& .MuiOutlinedInput-root": {
+                        "& fieldset": {
+                          borderColor: "var(--background-color)",
+                        },
+                        "&:hover fieldset": {
+                          borderColor: "var(--background-color)",
+                        },
+                        "&.Mui-focused fieldset": {
+                          borderColor: "var(--background-color)",
+                        },
+                      },
                     }}
-                    onClick={handleAddButton}
-                  >
-                    Add {tableType}
-                  </Button>
-                )
-              )}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <SearchIcon
+                            onClick={handleBlogSearch}
+                            sx={{
+                              cursor: "pointer",
+                              color: "var(--background-color)",
+                            }}
+                          />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                )}
+                {tableType === "Services" && (
+                  <TextField
+                    size="small"
+                    placeholder="Search..."
+                    variant="outlined"
+                    value={searchQueryService}
+                    onChange={(e) => setSearchQueryService(e.target.value)}
+                    sx={{
+                      minWidth: 200,
+                      backgroundColor: "white",
+                      borderRadius: 1,
+                      "& .MuiOutlinedInput-root": {
+                        "& fieldset": {
+                          borderColor: "var(--background-color)",
+                        },
+                        "&:hover fieldset": {
+                          borderColor: "var(--background-color)",
+                        },
+                        "&.Mui-focused fieldset": {
+                          borderColor: "var(--background-color)",
+                        },
+                      },
+                    }}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <SearchIcon
+                            onClick={handleServiceSearch}
+                            sx={{
+                              cursor: "pointer",
+                              color: "var(--background-color)",
+                            }}
+                          />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                )}
+                {selected.length > 0 && tableType !== "Featured Blogs" ? (
+                  <IconButton onClick={handleDeleteClick} sx={{ color: "red" }}>
+                    <DeleteIcon />
+                  </IconButton>
+                ) : (
+                  tableType !== "Comments" &&
+                  tableType !== "Lead" &&
+                  tableType !== "Applications" &&
+                  tableType !== "Featured Blogs" &&
+                  tableType !== "Tickets" && (
+                    <Button
+                      sx={{
+                        background: "var(--background-color)",
+                        color: "var(--text-color)",
+                        borderRadius: "var(--default-border-radius)",
+                        "&:hover": { background: "var(--shadow-low3)" },
+                      }}
+                      onClick={handleAddButton}
+                    >
+                      Add {tableType}
+                    </Button>
+                  )
+                )}
+              </Box>
             </Toolbar>
             <TableContainer>
               <Table stickyHeader>
@@ -525,7 +629,7 @@ export function useTable({ attributes, tableType, limitPerPage = 10 }) {
             <TablePagination
               rowsPerPageOptions={[5, 10, 25]}
               component="div"
-              count={totalRecords} // ✅ Correct count from API
+              count={totalRecords||0} // ✅ Correct count from API
               rowsPerPage={rowsPerPage}
               page={page - 1} // ✅ Convert to 0-based index for Material-UI
               onPageChange={handleChangePage}
