@@ -79,23 +79,17 @@ export function useTable({ attributes, tableType, limitPerPage = 10 }) {
   const [modeltype, setModeltype] = useState("Add");
   const [modelData, setModelData] = useState({});
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
-  const [searchQueryBlog, setSearchQueryBlog] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [searchQueryService, setSearchQueryService] = useState("");
 
   useEffect(() => {
     fetchData();
   }, [page, rowsPerPage]);
 
-  const handleBlogSearch = async () => {
-    const response = await searchBlog(searchQueryBlog);
-    setData(response?.blogs);
-    setTotalRecords(response?.blogs?.length);
+  const handleSearch = () => {
+   fetchData();
   };
-  const handleServiceSearch = async () => {
-    const response = await searchService(searchQueryService);
-    setData(response?.services);
-    setTotalRecords(response?.services?.length);
-  };
+ 
 
   const fetchData = async () => {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -113,19 +107,23 @@ export function useTable({ attributes, tableType, limitPerPage = 10 }) {
       setTotalRecords(response.categories.length);
     } else if (tableType === "Services") {
       ///////////////////////////
-      response = await fetchallserviceslist(page, rowsPerPage);
-      setData(response.servicelist);
-      setTotalRecords(response.totalservices);
+      response = await fetchallserviceslist(page, rowsPerPage,searchQuery);
+      setData(response.services);
+      setTotalRecords(response.totalServices);
     } else if (tableType === "Blogs") {
       if (userType === "Writer") {
-        response = await fetchBloglistofwritter(page, rowsPerPage, userName);
+        response = await fetchBloglistofwritter(page, rowsPerPage, userName, searchQuery);
         console.log("Response:", response);
 
-        setData(response.blogs);
-        setPage(response.currentPage);
-        setTotalRecords(response.totalBlogs);
+        setData(response?.blogs);
+        setPage(response?.currentPage);
+        setTotalRecords(response?.totalBlogs);
+        if(response.status==404){
+          setData([]);
+         
+        }
       } else {
-        response = await fetchallBloglist(page, rowsPerPage);
+        response = await fetchallBloglist(page, rowsPerPage,searchQuery);
         console.log("Response:", response);
 
         setData(response.blogs);
@@ -399,13 +397,13 @@ export function useTable({ attributes, tableType, limitPerPage = 10 }) {
               </Typography>
 
               <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                {tableType === "Blogs" && (
+                {(tableType === "Blogs" || tableType === "Services") && (
                   <TextField
                     size="small"
                     placeholder="Search..."
                     variant="outlined"
-                    value={searchQueryBlog}
-                    onChange={(e) => setSearchQueryBlog(e.target.value)}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
                     sx={{
                       minWidth: 200,
                       backgroundColor: "white",
@@ -426,7 +424,7 @@ export function useTable({ attributes, tableType, limitPerPage = 10 }) {
                       endAdornment: (
                         <InputAdornment position="end">
                           <SearchIcon
-                            onClick={handleBlogSearch}
+                            onClick={handleSearch}
                             sx={{
                               cursor: "pointer",
                               color: "var(--background-color)",
@@ -437,44 +435,7 @@ export function useTable({ attributes, tableType, limitPerPage = 10 }) {
                     }}
                   />
                 )}
-                {tableType === "Services" && (
-                  <TextField
-                    size="small"
-                    placeholder="Search..."
-                    variant="outlined"
-                    value={searchQueryService}
-                    onChange={(e) => setSearchQueryService(e.target.value)}
-                    sx={{
-                      minWidth: 200,
-                      backgroundColor: "white",
-                      borderRadius: 1,
-                      "& .MuiOutlinedInput-root": {
-                        "& fieldset": {
-                          borderColor: "var(--background-color)",
-                        },
-                        "&:hover fieldset": {
-                          borderColor: "var(--background-color)",
-                        },
-                        "&.Mui-focused fieldset": {
-                          borderColor: "var(--background-color)",
-                        },
-                      },
-                    }}
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <SearchIcon
-                            onClick={handleServiceSearch}
-                            sx={{
-                              cursor: "pointer",
-                              color: "var(--background-color)",
-                            }}
-                          />
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-                )}
+              
                 {selected.length > 0 && tableType !== "Featured Blogs" ? (
                   <IconButton onClick={handleDeleteClick} sx={{ color: "red" }}>
                     <DeleteIcon />
@@ -536,7 +497,7 @@ export function useTable({ attributes, tableType, limitPerPage = 10 }) {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {data.map((row) => {
+                  {data?.map((row) => {
                     const isItemSelected = isSelected(row._id);
                     return (
                       <TableRow key={row._id} selected={isItemSelected}>

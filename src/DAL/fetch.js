@@ -85,9 +85,9 @@ export const fetchallservicescategorylist = async (page, rowsPerPages) => {
   };
   return invokeApi(reqObj);
 };
-export const fetchallserviceslist = async (page, rowsPerPages) => {
+export const fetchallserviceslist = async (page, rowsPerPages,title) => {
   const reqObj = {
-    path: `/service/listbyadmin?limit=${rowsPerPages}&page=${page}`,
+    path: `/service/listbyadmin?title=${title}&limit=${rowsPerPages}&page=${page}`,
     method: "GET",
     headers: {
       Authorization: `Bearer ${localStorage.getItem("Token")}`,
@@ -110,9 +110,9 @@ export const fetchservicebyid = async (id) => {
   return invokeApi(reqObj);
 };
 //////////////////////////////////////////////
-export const fetchallBloglist = async ( page, rowsPerPages) => {
+export const fetchallBloglist = async ( page, rowsPerPages, title) => {
   const reqObj = {
-    path: `/blog/adminlist?limit=${rowsPerPages}&page=${page}`,
+    path: `/blog/adminlist?title=${title}&limit=${rowsPerPages}&page=${page}`,
     method: "GET",
     headers: {
       Authorization: `Bearer ${localStorage.getItem("Token")}`,
@@ -158,9 +158,9 @@ export const fetchTicket = async ( id) => {
   };
   return invokeApi(reqObj);
 };
-export const fetchBloglistofwritter = async ( page, rowsPerPages,name) => {
+export const fetchBloglistofwritter = async ( page, rowsPerPages,name,title) => {
   const reqObj = {
-    path: `/blog/writerlist?limit=${rowsPerPages}&page=${page}&search=${name}`,
+    path: `/blog/writerlist?title=${title}&search=${name}&limit=${rowsPerPages}&page=${page}`,
     method: "GET",
     headers: {
       Authorization: `Bearer ${localStorage.getItem("Token")}`,
